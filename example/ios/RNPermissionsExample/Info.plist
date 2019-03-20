@@ -67,6 +67,7 @@
 	<string>Please let me use speech recognition</string>
 	<key>UIAppFonts</key>
 	<array>
+		<string>MaterialCommunityIcons.ttf</string>
 		<string>MaterialIcons.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
