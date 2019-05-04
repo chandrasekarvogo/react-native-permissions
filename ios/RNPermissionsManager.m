@@ -189,10 +189,6 @@ RCT_EXPORT_MODULE(RNPermissions);
   return [modes isKindOfClass:[NSArray class]] && [modes containsObject:mode];
 }
 
-+ (void)logErrorMessage:(NSString *)message {
-  RCTLogError(@"%@", message);
-}
-
 + (bool)hasBeenRequestedOnce:(id<RNPermissionHandler>)handler {
   NSArray *requested = [[NSUserDefaults standardUserDefaults] arrayForKey:requestedKey];
   return [requested containsObject:NSStringFromClass([handler class])];
@@ -204,12 +200,13 @@ RCT_REMAP_METHOD(openSettings,
   UIApplication *sharedApplication = [UIApplication sharedApplication];
   NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
 
-  if ([sharedApplication canOpenURL:url]) {
-    [sharedApplication openURL:url];
-    resolve(@(true));
-  } else {
-    reject(@"cannot_open_settings", @"Cannot open application settings.", nil);
-  }
+  [sharedApplication openURL:url options:@{} completionHandler:^(BOOL success) {
+    if (success) {
+      resolve(@(true));
+    } else {
+      reject(@"cannot_open_settings", @"Cannot open application settings.", nil);
+    }
+  }];
 }
 
 RCT_REMAP_METHOD(check,

@@ -15,6 +15,7 @@ import {
   View,
 } from 'react-native';
 
+// $FlowFixMe
 let platformPermissions: string[] = Object.values(
   Platform.OS === 'ios'
     ? RNPermissions.IOS_PERMISSIONS

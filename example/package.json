@@ -5,7 +5,8 @@
   "scripts": {
     "clean:modules": "rm -rf node_modules/react-native-permissions/node_modules",
     "clean:example": "rm -rf node_modules/react-native-permissions/example",
-    "start": "yarn clean:modules && yarn clean:example && node node_modules/react-native/local-cli/cli.js start"
+    "start": "yarn clean:modules && clean:example && node node_modules/react-native/local-cli/cli.js start",
+    "postinstall": "cd ios && rm -rf Pods && pod install"
   },
   "dependencies": {
     "react": "16.8.3",
