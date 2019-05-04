@@ -29,6 +29,6 @@ typedef enum {
 
 + (bool)hasBackgroundModeEnabled:(NSString *)mode;
 
-+ (bool)hasBeenRequestedOnce:(id<RNPermissionHandler>)handler;
++ (bool)hasAlreadyBeenRequested:(id<RNPermissionHandler>)handler;
 
 @end

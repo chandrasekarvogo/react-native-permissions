@@ -189,7 +189,7 @@ RCT_EXPORT_MODULE(RNPermissions);
   return [modes isKindOfClass:[NSArray class]] && [modes containsObject:mode];
 }
 
-+ (bool)hasBeenRequestedOnce:(id<RNPermissionHandler>)handler {
++ (bool)hasAlreadyBeenRequested:(id<RNPermissionHandler>)handler {
   NSArray *requested = [[NSUserDefaults standardUserDefaults] arrayForKey:requestedKey];
   return [requested containsObject:NSStringFromClass([handler class])];
 }

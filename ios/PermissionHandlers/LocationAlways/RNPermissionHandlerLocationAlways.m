@@ -23,7 +23,7 @@
 
 - (void)checkWithResolver:(void (^)(RNPermissionStatus status))resolve
              withRejecter:(void (__unused ^)(NSError *error))reject {
-  if (![CLLocationManager locationServicesEnabled]) {
+  if (![CLLocationManager locationServicesEnabled] || ![RNPermissionsManager hasBackgroundModeEnabled:@"location"]) {
     return resolve(RNPermissionStatusNotAvailable);
   }
 
@@ -46,7 +46,7 @@
   CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
 
   if ((status != kCLAuthorizationStatusNotDetermined && status != kCLAuthorizationStatusAuthorizedWhenInUse) ||
-      ([RNPermissionsManager hasBeenRequestedOnce:self] && status == kCLAuthorizationStatusAuthorizedWhenInUse)) {
+      ([RNPermissionsManager hasAlreadyBeenRequested:self] && status == kCLAuthorizationStatusAuthorizedWhenInUse)) {
     return [self checkWithResolver:resolve withRejecter:reject];
   }
 

@@ -39,9 +39,7 @@
 - (void)requestWithOptions:(__unused NSDictionary * _Nullable)options
               withResolver:(void (^)(RNPermissionStatus status))resolve
               withRejecter:(void (^)(NSError *error))reject {
-  CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
-
-  if (status != kCLAuthorizationStatusNotDetermined) {
+  if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusNotDetermined) {
     return [self checkWithResolver:resolve withRejecter:reject];
   }
 

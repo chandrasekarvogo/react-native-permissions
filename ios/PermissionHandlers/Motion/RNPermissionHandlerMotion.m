@@ -2,8 +2,6 @@
 
 @import CoreMotion;
 
-static NSString* handlerKey = @"motion";
-
 @interface RNPermissionHandlerMotion()
 
 @property (nonatomic, strong) CMMotionActivityManager *motionActivityManager;
@@ -36,7 +34,7 @@ static NSString* handlerKey = @"motion";
     }
   }
 
-  if (![RNPermissionsManager hasBeenRequestedOnce:self]) {
+  if (![RNPermissionsManager hasAlreadyBeenRequested:self]) {
     return resolve(RNPermissionStatusNotDetermined);
   }
 
