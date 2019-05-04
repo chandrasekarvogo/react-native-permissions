@@ -1,4 +1,4 @@
-package com.yonahforst.rnpermissions;
+package com.reactnativecommunity.rnpermissions;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;

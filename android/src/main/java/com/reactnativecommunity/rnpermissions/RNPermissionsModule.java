@@ -1,4 +1,4 @@
-package com.yonahforst.rnpermissions;
+package com.reactnativecommunity.rnpermissions;
 
 import android.Manifest;
 import android.content.Intent;
