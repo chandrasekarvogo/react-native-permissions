@@ -1,10 +1,10 @@
 // @flow
 
-import * as React from "react";
-import { Appbar, List, TouchableRipple, Snackbar } from "react-native-paper";
-import * as RNPermissions from "react-native-permissions";
-import type { PermissionStatus } from "react-native-permissions";
-import theme from "./theme";
+import * as React from 'react';
+import { Appbar, List, TouchableRipple, Snackbar } from 'react-native-paper';
+import * as RNPermissions from 'react-native-permissions';
+import type { PermissionStatus } from 'react-native-permissions';
+import theme from './theme';
 
 import {
   AppState,
@@ -12,32 +12,30 @@ import {
   StatusBar,
   ScrollView,
   StyleSheet,
-  Text,
   View,
-} from "react-native";
+} from 'react-native';
 
-// $FlowFixMe
 let platformPermissions: string[] = Object.values(
-  Platform.OS === "ios"
+  Platform.OS === 'ios'
     ? RNPermissions.IOS_PERMISSIONS
     : RNPermissions.ANDROID_PERMISSIONS,
-).filter(permission => permission !== "SIRI");
+).filter(permission => permission !== 'SIRI');
 
 const statusColors: { [PermissionStatus]: string } = {
-  granted: "#43a047",
-  denied: "#ff9800",
-  never_ask_again: "#e53935",
-  unavailable: "#cfd8dc",
+  granted: '#43a047',
+  denied: '#ff9800',
+  never_ask_again: '#e53935',
+  unavailable: '#cfd8dc',
 };
 
 const statusIcons: { [PermissionStatus]: string } = {
-  granted: "check-circle",
-  denied: "error",
-  never_ask_again: "cancel",
-  unavailable: "lens",
+  granted: 'check-circle',
+  denied: 'error',
+  never_ask_again: 'cancel',
+  unavailable: 'lens',
 };
 
-type AppStateType = "active" | "background" | "inactive";
+type AppStateType = 'active' | 'background' | 'inactive';
 
 type Props = {};
 
@@ -70,11 +68,11 @@ export default class App extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    AppState.addEventListener("change", this.onAppStateChange);
+    AppState.addEventListener('change', this.onAppStateChange);
   }
 
   componentWillUnmount() {
-    AppState.removeEventListener("change", this.onAppStateChange);
+    AppState.removeEventListener('change', this.onAppStateChange);
   }
 
   checkAllPermissions = () => {
@@ -89,7 +87,7 @@ export default class App extends React.Component<Props, State> {
   };
 
   onAppStateChange = (nextAppState: AppStateType) => {
-    if (this.state.watchAppState && nextAppState === "active") {
+    if (this.state.watchAppState && nextAppState === 'active') {
       this.setState({
         snackBarVisible: true,
         watchAppState: false,
@@ -139,12 +137,12 @@ export default class App extends React.Component<Props, State> {
                     status === RNPermissions.RESULTS.NEVER_ASK_AGAIN
                   }
                   onPress={() => {
-                    RNPermissions.request(permission).then(status => {
+                    RNPermissions.request(permission).then(result => {
                       this.setState(prevState => ({
                         ...prevState,
                         statuses: {
                           ...prevState.statuses,
-                          [permission]: status,
+                          [permission]: result,
                         },
                       }));
                     });
