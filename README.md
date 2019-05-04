@@ -117,7 +117,7 @@ Promises resolve into one of these statuses:
 ### Supported permissions
 
 ```js
-import { ANDROID_PERMISSIONS, IOS_PERMISSIONS } from "react-native-permissions";
+import { ANDROID_PERMISSIONS, IOS_PERMISSIONS } from 'react-native-permissions';
 
 // For Android
 
@@ -180,10 +180,10 @@ _types used in usage examples_
 type Permission = keyof ANDROID_PERMISSIONS | keyof IOS_PERMISSIONS;
 
 type PermissionStatus =
-  | "granted"
-  | "denied"
-  | "never_ask_again"
-  | "unavailable";
+  | 'granted'
+  | 'denied'
+  | 'never_ask_again'
+  | 'unavailable';
 ```
 
 #### check()
@@ -199,21 +199,21 @@ function check(permission: Permission): Promise<PermissionStatus>;
 #### Usage example
 
 ```js
-import { check, IOS_PERMISSIONS, RESULTS } from "react-native-permissions";
+import { check, IOS_PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 check(RNPermissions.IOS_PERMISSIONS.LOCATION_ALWAYS).then(result => {
   switch (result) {
     case RESULTS.UNAVAILABLE:
-      console.log("the feature is not available on this device");
+      console.log('the feature is not available on this device');
       break;
     case RESULTS.GRANTED:
-      console.log("permission is granted");
+      console.log('permission is granted');
       break;
     case RESULTS.DENIED:
-      console.log("permission is denied, but requestable");
+      console.log('permission is denied, but requestable');
       break;
     case RESULTS.NEVER_ASK_AGAIN:
-      console.log("permission is denied and not requestable");
+      console.log('permission is denied and not requestable');
       break;
   }
 });
@@ -234,7 +234,7 @@ function checkMultiple<P: Permission>(permissions: P[]): Promise<{ [permission: 
 #### Usage example
 
 ```js
-import { checkMultiple, IOS_PERMISSIONS } from "react-native-permissions";
+import { checkMultiple, IOS_PERMISSIONS } from 'react-native-permissions';
 
 checkMultiple([
   IOS_PERMISSIONS.LOCATION_ALWAYS,
@@ -255,12 +255,12 @@ Request one permission.
 
 ```ts
 type NotificationOption =
-  | "badge"
-  | "sound"
-  | "alert"
-  | "carPlay"
-  | "criticalAlert"
-  | "provisional";
+  | 'badge'
+  | 'sound'
+  | 'alert'
+  | 'carPlay'
+  | 'criticalAlert'
+  | 'provisional';
 
 type Rationale = {
   title: string;
@@ -282,7 +282,7 @@ function request(
 #### Usage example
 
 ```js
-import { request, IOS_PERMISSIONS } from "react-native-permissions";
+import { request, IOS_PERMISSIONS } from 'react-native-permissions';
 
 request(IOS_PERMISSIONS.LOCATION_ALWAYS).then(result => {
   // …
@@ -304,7 +304,7 @@ function requestMultiple<P: Permission>(permissions: P[]): Promise<{ [permission
 #### Usage example
 
 ```js
-import { requestMultiple, IOS_PERMISSIONS } from "react-native-permissions";
+import { requestMultiple, IOS_PERMISSIONS } from 'react-native-permissions';
 
 requestMultiple([
   IOS_PERMISSIONS.LOCATION_ALWAYS,

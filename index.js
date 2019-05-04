@@ -6,7 +6,7 @@ import {
   PermissionsAndroid,
   Platform,
   // $FlowFixMe
-} from "react-native";
+} from 'react-native';
 
 const { RNPermissions } = NativeModules;
 
@@ -14,9 +14,9 @@ export const ANDROID_PERMISSIONS = {
   ...PermissionsAndroid.PERMISSIONS,
   // Dangerous permissions not included in PermissionsAndroid
   // They might be unavailable in the current OS
-  ANSWER_PHONE_CALLS: "android.permission.ANSWER_PHONE_CALLS",
-  ACCEPT_HANDOVER: "android.permission.ACCEPT_HANDOVER",
-  READ_PHONE_NUMBERS: "android.permission.READ_PHONE_NUMBERS",
+  ANSWER_PHONE_CALLS: 'android.permission.ANSWER_PHONE_CALLS',
+  ACCEPT_HANDOVER: 'android.permission.ACCEPT_HANDOVER',
+  READ_PHONE_NUMBERS: 'android.permission.READ_PHONE_NUMBERS',
 };
 
 // function keyMirror<O: {}>(obj: O): $ObjMapi<O, <K>(k: K) => K> {
@@ -24,29 +24,29 @@ export const ANDROID_PERMISSIONS = {
 // }
 
 export const IOS_PERMISSIONS = {
-  BLUETOOTH_PERIPHERAL: "BLUETOOTH_PERIPHERAL",
-  CALENDARS: "CALENDARS",
-  CAMERA: "CAMERA",
-  CONTACTS: "CONTACTS",
-  FACE_ID: "FACE_ID",
-  LOCATION_ALWAYS: "LOCATION_ALWAYS",
-  LOCATION_WHEN_IN_USE: "LOCATION_WHEN_IN_USE",
-  MEDIA_LIBRARY: "MEDIA_LIBRARY",
-  MICROPHONE: "MICROPHONE",
-  MOTION: "MOTION",
-  NOTIFICATIONS: "NOTIFICATIONS",
-  PHOTO_LIBRARY: "PHOTO_LIBRARY",
-  REMINDERS: "REMINDERS",
-  SIRI: "SIRI",
-  SPEECH_RECOGNITION: "SPEECH_RECOGNITION",
-  STOREKIT: "STOREKIT",
+  BLUETOOTH_PERIPHERAL: 'BLUETOOTH_PERIPHERAL',
+  CALENDARS: 'CALENDARS',
+  CAMERA: 'CAMERA',
+  CONTACTS: 'CONTACTS',
+  FACE_ID: 'FACE_ID',
+  LOCATION_ALWAYS: 'LOCATION_ALWAYS',
+  LOCATION_WHEN_IN_USE: 'LOCATION_WHEN_IN_USE',
+  MEDIA_LIBRARY: 'MEDIA_LIBRARY',
+  MICROPHONE: 'MICROPHONE',
+  MOTION: 'MOTION',
+  NOTIFICATIONS: 'NOTIFICATIONS',
+  PHOTO_LIBRARY: 'PHOTO_LIBRARY',
+  REMINDERS: 'REMINDERS',
+  SIRI: 'SIRI',
+  SPEECH_RECOGNITION: 'SPEECH_RECOGNITION',
+  STOREKIT: 'STOREKIT',
 };
 
 export const RESULTS = {
-  GRANTED: "granted",
-  DENIED: "denied",
-  NEVER_ASK_AGAIN: "never_ask_again",
-  UNAVAILABLE: "unavailable",
+  GRANTED: 'granted',
+  DENIED: 'denied',
+  NEVER_ASK_AGAIN: 'never_ask_again',
+  UNAVAILABLE: 'unavailable',
 };
 
 export type Permission =
@@ -64,12 +64,12 @@ export type Rationale = {|
 |};
 
 export type NotificationOption =
-  | "badge"
-  | "sound"
-  | "alert"
-  | "carPlay"
-  | "criticalAlert"
-  | "provisional";
+  | 'badge'
+  | 'sound'
+  | 'alert'
+  | 'carPlay'
+  | 'criticalAlert'
+  | 'provisional';
 
 export type RequestConfig = {
   notificationOptions?: NotificationOption[],
@@ -77,12 +77,12 @@ export type RequestConfig = {
 };
 
 const platformPermissions = Object.values(
-  Platform.OS === "ios" ? IOS_PERMISSIONS : ANDROID_PERMISSIONS,
+  Platform.OS === 'ios' ? IOS_PERMISSIONS : ANDROID_PERMISSIONS,
 );
 
 function assertValidPermission(permission: string) {
   if (!platformPermissions.includes(permission)) {
-    const bulletsList = `• ${platformPermissions.join("\n• ")}`;
+    const bulletsList = `• ${platformPermissions.join('\n• ')}`;
     const alertSentence = `Invalid ${
       Platform.OS
     } permission "${permission}". Must be one of:\n\n`;
@@ -103,7 +103,7 @@ function getUnavailablePermissions(permissions: string[]) {
   );
 }
 
-const requestedKey = "@RNPermissions:requested";
+const requestedKey = '@RNPermissions:requested';
 
 async function getRequestedPermissions() {
   const requested = await AsyncStorage.getItem(requestedKey);
@@ -119,7 +119,7 @@ async function setRequestedPermissions(permissions: string[]) {
 async function internalCheck(
   permission: Permission,
 ): Promise<PermissionStatus> {
-  if (Platform.OS !== "android") {
+  if (Platform.OS !== 'android') {
     return RNPermissions.check(permission);
   }
 
@@ -146,7 +146,7 @@ async function internalRequest(
 ): Promise<PermissionStatus> {
   const { notificationOptions, rationale } = config;
 
-  if (Platform.OS !== "android") {
+  if (Platform.OS !== 'android') {
     return RNPermissions.request(permission, { notificationOptions });
   }
 
@@ -164,7 +164,7 @@ async function internalCheckMultiple(
   let available = permissions;
   let result = {};
 
-  if (Platform.OS === "android") {
+  if (Platform.OS === 'android') {
     result = await getUnavailablePermissions(permissions);
     const unavailable = Object.keys(result);
     available = permissions.filter(p => !unavailable.includes(p));
@@ -182,7 +182,7 @@ async function internalCheckMultiple(
 async function internalRequestMultiple(
   permissions: Permission[],
 ): Promise<{ [permission: Permission]: PermissionStatus }> {
-  if (Platform.OS !== "android") {
+  if (Platform.OS !== 'android') {
     const result = {};
 
     for (let i = 0; i < permissions.length; i++) {
