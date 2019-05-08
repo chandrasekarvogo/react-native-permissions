@@ -4,12 +4,16 @@
 
 @implementation RNPermissionHandlerContacts
 
++ (NSString * _Nonnull)uniqueRequestingId {
+  return @"contacts";
+}
+
 + (NSArray<NSString *> *)usageDescriptionKeys {
   return @[@"NSContactsUsageDescription"];
 }
 
-- (void)checkWithResolver:(void (^)(RNPermissionStatus status))resolve
-             withRejecter:(void (__unused ^)(NSError *error))reject {
+- (void)checkWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                 rejecter:(void (__unused ^ _Nonnull)(NSError * _Nonnull))reject {
   switch ([CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts]) {
     case CNAuthorizationStatusNotDetermined:
       return resolve(RNPermissionStatusNotDetermined);
@@ -22,14 +26,14 @@
   }
 }
 
-- (void)requestWithOptions:(__unused NSDictionary * _Nullable)options
-              withResolver:(void (^)(RNPermissionStatus status))resolve
-              withRejecter:(void (^)(NSError *error))reject {
+- (void)requestWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                   rejecter:(void (^ _Nonnull)(NSError * _Nonnull))reject
+                    options:(__unused NSDictionary * _Nullable)options {
   [[CNContactStore new] requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(__unused BOOL granted, NSError * _Nullable error) {
     if (error != nil && error.code != 100) {
       reject(error);
     } else {
-      [self checkWithResolver:resolve withRejecter:reject];
+      [self checkWithResolver:resolve rejecter:reject];
     }
   }];
 }

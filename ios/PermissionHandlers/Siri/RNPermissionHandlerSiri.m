@@ -4,12 +4,16 @@
 
 @implementation RNPermissionHandlerSiri
 
++ (NSString * _Nonnull)uniqueRequestingId {
+  return @"siri";
+}
+
 + (NSArray<NSString *> *)usageDescriptionKeys {
   return @[@"NSSiriUsageDescription"];
 }
 
-- (void)checkWithResolver:(void (^)(RNPermissionStatus status))resolve
-             withRejecter:(void (__unused ^)(NSError *error))reject {
+- (void)checkWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                 rejecter:(void (__unused ^ _Nonnull)(NSError * _Nonnull))reject {
   switch ([INPreferences siriAuthorizationStatus]) {
     case INSiriAuthorizationStatusNotDetermined:
       return resolve(RNPermissionStatusNotDetermined);
@@ -22,11 +26,11 @@
   }
 }
 
-- (void)requestWithOptions:(__unused NSDictionary * _Nullable)options
-              withResolver:(void (^)(RNPermissionStatus status))resolve
-              withRejecter:(void (^)(NSError *error))reject {
+- (void)requestWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                   rejecter:(void (^ _Nonnull)(NSError * _Nonnull))reject
+                    options:(__unused NSDictionary * _Nullable)options {
   [INPreferences requestSiriAuthorization:^(__unused INSiriAuthorizationStatus status) {
-    [self checkWithResolver:resolve withRejecter:reject];
+    [self checkWithResolver:resolve rejecter:reject];
   }];
 }
 

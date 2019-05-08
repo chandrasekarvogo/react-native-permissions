@@ -14,6 +14,10 @@
 
 @implementation RNPermissionHandlerLocationAlways
 
++ (NSString * _Nonnull)uniqueRequestingId {
+  return @"location-always";
+}
+
 + (NSArray<NSString *> *)usageDescriptionKeys {
   return @[
     @"NSLocationAlwaysAndWhenInUseUsageDescription",
@@ -21,8 +25,8 @@
   ];
 }
 
-- (void)checkWithResolver:(void (^)(RNPermissionStatus status))resolve
-             withRejecter:(void (__unused ^)(NSError *error))reject {
+- (void)checkWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                 rejecter:(void (__unused ^ _Nonnull)(NSError * _Nonnull))reject {
   if (![CLLocationManager locationServicesEnabled] || ![RNPermissionsManager hasBackgroundModeEnabled:@"location"]) {
     return resolve(RNPermissionStatusNotAvailable);
   }
@@ -40,14 +44,14 @@
   }
 }
 
-- (void)requestWithOptions:(__unused NSDictionary * _Nullable)options
-              withResolver:(void (^)(RNPermissionStatus status))resolve
-              withRejecter:(void (^)(NSError *error))reject {
+- (void)requestWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                   rejecter:(void (^ _Nonnull)(NSError * _Nonnull))reject
+                    options:(__unused NSDictionary * _Nullable)options {
   CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
 
   if ((status != kCLAuthorizationStatusNotDetermined && status != kCLAuthorizationStatusAuthorizedWhenInUse) ||
       ([RNPermissionsManager hasAlreadyBeenRequested:self] && status == kCLAuthorizationStatusAuthorizedWhenInUse)) {
-    return [self checkWithResolver:resolve withRejecter:reject];
+    return [self checkWithResolver:resolve rejecter:reject];
   }
 
   _resolve = resolve;
@@ -63,7 +67,7 @@
 }
 
 - (void)onAuthorizationStatus {
-  [self checkWithResolver:_resolve withRejecter:_reject];
+  [self checkWithResolver:_resolve rejecter:_reject];
 
   [_locationManager setDelegate:nil];
   _locationManager = nil;

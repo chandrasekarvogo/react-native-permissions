@@ -3,18 +3,18 @@ package = JSON.parse(File.read('./package.json'))
 
 Pod::Spec.new do |s|
   s.name                = "RNPermissions"
-  s.authors             = package["author"]
-  s.description         = package["description"]
-  s.homepage            = package["homepage"]
-  s.license             = package["license"]
-  s.summary             = package["description"]
   s.version             = package["version"]
+  s.description         = package["description"]
+  s.summary             = package["description"]
+  s.authors             = package["author"]
+  s.license             = package["license"]
+  s.homepage            = package["homepage"]
 
   s.default_subspec     = "Core"
   s.platform            = :ios, "10.0"
   s.requires_arc        = true
   s.static_framework    = true
-  s.source              = { :git => "#{s.homepage}.git", :tag => s.version }
+  s.source              = { :git => s.homepage, :tag => s.version }
   s.source_files        = "ios/*.{h,m}"
 
   s.subspec "Core" do |ss|

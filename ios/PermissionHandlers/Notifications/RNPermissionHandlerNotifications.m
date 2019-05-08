@@ -5,8 +5,16 @@
 
 @implementation RNPermissionHandlerNotifications
 
-- (void)checkWithResolver:(void (^)(RNPermissionStatus status))resolve
-             withRejecter:(void (__unused ^)(NSError *error))reject {
++ (NSString * _Nonnull)uniqueRequestingId {
+  return @"notifications";
+}
+
++ (NSArray<NSString *> * _Nonnull)usageDescriptionKeys {
+  return @[];
+}
+
+- (void)checkWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                 rejecter:(void (__unused ^ _Nonnull)(NSError * _Nonnull))reject {
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
     switch (settings.authorizationStatus) {
       case UNAuthorizationStatusNotDetermined:
@@ -22,35 +30,29 @@
   }];
 }
 
-- (void)requestWithOptions:(NSDictionary * _Nullable)options
-              withResolver:(void (^)(RNPermissionStatus status))resolve
-              withRejecter:(void (^)(NSError *error))reject {
+- (void)requestWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                   rejecter:(void (^ _Nonnull)(NSError * _Nonnull))reject
+                    options:(NSDictionary * _Nullable)options {
   UNAuthorizationOptions toRequest = UNAuthorizationOptionNone;
 
   if (options != nil) {
     NSArray<NSString *> *notificationOptions = [options objectForKey:@"notificationOptions"];
 
     if (notificationOptions != nil && [notificationOptions isKindOfClass:[NSArray class]]) {
-      if ([notificationOptions containsObject:@"badge"]) {
+      if ([notificationOptions containsObject:@"badge"])
         toRequest += UNAuthorizationOptionBadge;
-      }
-      if ([notificationOptions containsObject:@"sound"]) {
+      if ([notificationOptions containsObject:@"sound"])
         toRequest += UNAuthorizationOptionSound;
-      }
-      if ([notificationOptions containsObject:@"alert"]) {
+      if ([notificationOptions containsObject:@"alert"])
         toRequest += UNAuthorizationOptionAlert;
-      }
-      if ([notificationOptions containsObject:@"carPlay"]) {
+      if ([notificationOptions containsObject:@"carPlay"])
         toRequest += UNAuthorizationOptionCarPlay;
-      }
 
       if (@available(iOS 12.0, *)) {
-        if ([notificationOptions containsObject:@"provisional"]) {
+        if ([notificationOptions containsObject:@"provisional"])
           toRequest += UNAuthorizationOptionProvisional;
-        }
-        if ([notificationOptions containsObject:@"criticalAlert"]) {
+        if ([notificationOptions containsObject:@"criticalAlert"])
           toRequest += UNAuthorizationOptionCriticalAlert;
-        }
       }
     } else {
       toRequest += UNAuthorizationOptionBadge;
@@ -59,11 +61,11 @@
     }
   }
 
-  [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:toRequest completionHandler:^(BOOL granted, NSError * _Nullable error) {
+  [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:toRequest completionHandler:^(__unused BOOL granted, NSError * _Nullable error) {
     if (error != nil) {
       reject(error);
     } else {
-      [self checkWithResolver:resolve withRejecter:reject];
+      [self checkWithResolver:resolve rejecter:reject];
     }
   }];
 }

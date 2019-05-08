@@ -4,8 +4,16 @@
 
 @implementation RNPermissionHandlerStoreKit
 
-- (void)checkWithResolver:(void (^)(RNPermissionStatus status))resolve
-             withRejecter:(void (__unused ^)(NSError *error))reject {
++ (NSString * _Nonnull)uniqueRequestingId {
+  return @"storekit";
+}
+
++ (NSArray<NSString *> * _Nonnull)usageDescriptionKeys {
+  return @[];
+}
+
+- (void)checkWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                 rejecter:(void (__unused ^ _Nonnull)(NSError * _Nonnull))reject {
   switch ([SKCloudServiceController authorizationStatus]) {
     case SKCloudServiceAuthorizationStatusNotDetermined:
       return resolve(RNPermissionStatusNotDetermined);
@@ -18,11 +26,11 @@
   }
 }
 
-- (void)requestWithOptions:(__unused NSDictionary * _Nullable)options
-              withResolver:(void (^)(RNPermissionStatus status))resolve
-              withRejecter:(void (^)(NSError *error))reject {
+- (void)requestWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                   rejecter:(void (^ _Nonnull)(NSError * _Nonnull))reject
+                    options:(__unused NSDictionary * _Nullable)options {
   [SKCloudServiceController requestAuthorization:^(__unused SKCloudServiceAuthorizationStatus status) {
-    [self checkWithResolver:resolve withRejecter:reject];
+    [self checkWithResolver:resolve rejecter:reject];
   }];
 }
 

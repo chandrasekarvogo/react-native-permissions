@@ -13,74 +13,78 @@
 
 @implementation RNPermissionHandlerFaceID
 
++ (NSString * _Nonnull)uniqueRequestingId {
+  return @"face-id";
+}
+
 + (NSArray<NSString *> *)usageDescriptionKeys {
   return @[@"NSFaceIDUsageDescription"];
 }
 
-- (void)checkWithResolver:(void (^)(RNPermissionStatus status))resolve
-             withRejecter:(void (^)(NSError *error))reject {
+- (void)checkWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                 rejecter:(void (^ _Nonnull)(NSError * _Nonnull))reject {
   if (@available(iOS 11.0, *)) {
     LAContext *context = [LAContext new];
     NSError *error;
     [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
-    
+
     if (context.biometryType == LABiometryTypeTouchID) {
       return resolve(RNPermissionStatusNotAvailable);
     }
-    
+
     if (error != nil) {
       if (error.code == LAErrorBiometryNotEnrolled) {
         return resolve(RNPermissionStatusNotAvailable);
       }
-      
+
       if (error.code == LAErrorBiometryNotAvailable) {
         if ([RNPermissionsManager hasAlreadyBeenRequested:self]) {
           return resolve(RNPermissionStatusDenied);
         }
         return resolve(RNPermissionStatusNotAvailable);
       }
-      
+
       return reject(error);
     }
-    
+
     if (![RNPermissionsManager hasAlreadyBeenRequested:self]) {
       return resolve(RNPermissionStatusNotDetermined);
     }
-    
+
     if (context.biometryType == LABiometryTypeFaceID) {
       return resolve(RNPermissionStatusAuthorized);
     }
-    
+
     resolve(RNPermissionStatusDenied);
   } else {
     resolve(RNPermissionStatusNotAvailable);
   }
 }
 
-- (void)requestWithOptions:(__unused NSDictionary * _Nullable)options
-              withResolver:(void (^)(RNPermissionStatus status))resolve
-              withRejecter:(void (^)(NSError *error))reject {
+- (void)requestWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                   rejecter:(void (^ _Nonnull)(NSError * _Nonnull))reject
+                    options:(__unused NSDictionary * _Nullable)options {
   if (@available(iOS 11.0, *)) {
     LAContext *context = [LAContext new];
     NSError *error;
     [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
-    
+
     if (context.biometryType == LABiometryTypeTouchID) {
       return resolve(RNPermissionStatusNotAvailable);
     }
-    
+
     if (error != nil) {
       if (error.code == LAErrorBiometryNotEnrolled) {
         return resolve(RNPermissionStatusNotAvailable);
       }
-      
+
       if (error.code == LAErrorBiometryNotAvailable) {
         if ([RNPermissionsManager hasAlreadyBeenRequested:self]) {
           return resolve(RNPermissionStatusDenied);
         }
         return resolve(RNPermissionStatusNotAvailable);
       }
-      
+
       return reject(error);
     }
 
@@ -104,7 +108,7 @@
   self->_laContext = nil;
 }
 
-- (void)UIApplicationDidBecomeActiveNotification:(NSNotification *)notification {
+- (void)UIApplicationDidBecomeActiveNotification:(__unused NSNotification *)notification {
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
 
   if (@available(iOS 11.0, *)) {
@@ -112,14 +116,14 @@
     NSError *error;
     [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
 
-    if (error == nil) {
-      return self->_resolve(RNPermissionStatusAuthorized);
+    if (error != nil) {
+      if (error.code == LAErrorBiometryNotAvailable) {
+        return self->_resolve(RNPermissionStatusDenied);
+      }
+      return self->_reject(error);
     }
-    if (error.code == LAErrorBiometryNotAvailable) {
-      return self->_resolve(RNPermissionStatusDenied);
-    }
-    
-    self->_reject(error);
+
+    return self->_resolve(RNPermissionStatusAuthorized);
   }
 }
 

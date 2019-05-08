@@ -12,12 +12,16 @@
 
 @implementation RNPermissionHandlerBluetoothPeripheral
 
-+ (NSArray<NSString *> *)usageDescriptionKeys {
++ (NSString * _Nonnull)uniqueRequestingId {
+  return @"bluetooth-peripheral";
+}
+
++ (NSArray<NSString *> * _Nonnull)usageDescriptionKeys {
   return @[@"NSBluetoothPeripheralUsageDescription"];
 }
 
-- (void)checkWithResolver:(void (^)(RNPermissionStatus status))resolve
-             withRejecter:(void (__unused ^)(NSError *error))reject {
+- (void)checkWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                 rejecter:(void (__unused ^ _Nonnull)(NSError * _Nonnull))reject {
 #if TARGET_OS_SIMULATOR
   return resolve(RNPermissionStatusNotAvailable);
 #else
@@ -38,9 +42,9 @@
 #endif
 }
 
-- (void)requestWithOptions:(__unused NSDictionary * _Nullable)options
-              withResolver:(void (^)(RNPermissionStatus status))resolve
-              withRejecter:(void (^)(NSError *error))reject {
+- (void)requestWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                   rejecter:(void (^ _Nonnull)(NSError * _Nonnull))reject
+                    options:(__unused NSDictionary * _Nullable)options {
   if (![RNPermissionsManager hasBackgroundModeEnabled:@"bluetooth-peripheral"]) {
     return resolve(RNPermissionStatusNotAvailable);
   }
@@ -71,7 +75,7 @@
     case CBManagerStateUnauthorized:
       return _resolve(RNPermissionStatusDenied);
     case CBManagerStatePoweredOn:
-      return [self checkWithResolver:_resolve withRejecter:_reject];
+      return [self checkWithResolver:_resolve rejecter:_reject];
   }
 }
 

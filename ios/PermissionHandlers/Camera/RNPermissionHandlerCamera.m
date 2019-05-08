@@ -4,12 +4,16 @@
 
 @implementation RNPermissionHandlerCamera
 
++ (NSString * _Nonnull)uniqueRequestingId {
+  return @"camera";
+}
+
 + (NSArray<NSString *> *)usageDescriptionKeys {
   return @[@"NSCameraUsageDescription"];
 }
 
-- (void)checkWithResolver:(void (^)(RNPermissionStatus status))resolve
-             withRejecter:(void (__unused ^)(NSError *error))reject {
+- (void)checkWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                 rejecter:(void (__unused ^ _Nonnull)(NSError * _Nonnull))reject {
   switch ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]) {
     case AVAuthorizationStatusNotDetermined:
       return resolve(RNPermissionStatusNotDetermined);
@@ -22,11 +26,11 @@
   }
 }
 
-- (void)requestWithOptions:(__unused NSDictionary * _Nullable)options
-              withResolver:(void (^)(RNPermissionStatus status))resolve
-              withRejecter:(void (^)(NSError *error))reject {
+- (void)requestWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                   rejecter:(void (^ _Nonnull)(NSError * _Nonnull))reject
+                    options:(__unused NSDictionary * _Nullable)options {
   [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(__unused BOOL granted) {
-    [self checkWithResolver:resolve withRejecter:reject];
+    [self checkWithResolver:resolve rejecter:reject];
   }];
 }
 

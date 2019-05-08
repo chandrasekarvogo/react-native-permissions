@@ -52,7 +52,7 @@
 #import "RNPermissionHandlerStoreKit.h"
 #endif
 
-static NSString* requestedKey = @"@RNPermissions:requested";
+static NSString* requestedSettingName = @"@RNPermissions:requested";
 
 @implementation RNPermissionsManager
 
@@ -155,14 +155,10 @@ RCT_EXPORT_MODULE(RNPermissions);
   }
 
 #if RCT_DEV
-  if (handler != nil && [[handler class] respondsToSelector:@selector(usageDescriptionKeys)]) {
-    NSArray<NSString *> *usageDescriptionKeys = [[handler class] usageDescriptionKeys];
-
-    for (NSString *key in usageDescriptionKeys) {
-      if (![[NSBundle mainBundle] objectForInfoDictionaryKey:key]) {
-        RCTLogError(@"Cannot check or request permission without the required \"%@\" entry in your app \"Info.plist\" file.", key);
-        return nil;
-      }
+  for (NSString *key in [[handler class] usageDescriptionKeys]) {
+    if (![[NSBundle mainBundle] objectForInfoDictionaryKey:key]) {
+      RCTLogError(@"Cannot check or request permission without the required \"%@\" entry in your app \"Info.plist\" file.", key);
+      return nil;
     }
   }
 #endif
@@ -190,8 +186,8 @@ RCT_EXPORT_MODULE(RNPermissions);
 }
 
 + (bool)hasAlreadyBeenRequested:(id<RNPermissionHandler>)handler {
-  NSArray *requested = [[NSUserDefaults standardUserDefaults] arrayForKey:requestedKey];
-  return [requested containsObject:NSStringFromClass([handler class])];
+  NSArray *requested = [[NSUserDefaults standardUserDefaults] arrayForKey:requestedSettingName];
+  return [requested containsObject:[[handler class] uniqueRequestingId]];
 }
 
 RCT_REMAP_METHOD(openSettings,
@@ -217,7 +213,7 @@ RCT_REMAP_METHOD(check,
 
   [handler checkWithResolver:^(RNPermissionStatus status) {
     resolve([self stringForStatus:status]);
-  } withRejecter:^(NSError *error) {
+  } rejecter:^(NSError *error) {
     reject([NSString stringWithFormat:@"%ld", (long)error.code], error.localizedDescription, error);
   }];
 }
@@ -229,25 +225,25 @@ RCT_REMAP_METHOD(request,
                  withRejecter:(RCTPromiseRejectBlock)reject) {
   id<RNPermissionHandler> handler = [self handlerForPermission:permission];
 
-  [handler requestWithOptions:options withResolver:^(RNPermissionStatus status) {
+  [handler requestWithResolver:^(RNPermissionStatus status) {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    NSString *handlerClassName = NSStringFromClass([handler class]);
-    NSMutableArray *requested = [[userDefaults arrayForKey:requestedKey] mutableCopy];
+    NSString *handlerRequestingId = [[handler class] uniqueRequestingId];
+    NSMutableArray *requested = [[userDefaults arrayForKey:requestedSettingName] mutableCopy];
 
     if (requested == nil) {
       requested = [NSMutableArray new];
     }
 
-    if (![requested containsObject:handlerClassName]) {
-      [requested addObject:handlerClassName];
-      [userDefaults setObject:requested forKey:requestedKey];
+    if (![requested containsObject:handlerRequestingId]) {
+      [requested addObject:handlerRequestingId];
+      [userDefaults setObject:requested forKey:requestedSettingName];
       [userDefaults synchronize];
     }
 
     resolve([self stringForStatus:status]);
-  } withRejecter:^(NSError *error) {
+  } rejecter:^(NSError *error) {
     reject([NSString stringWithFormat:@"%ld", (long)error.code], error.localizedDescription, error);
-  }];
+  } options:options];
 }
 
 @end

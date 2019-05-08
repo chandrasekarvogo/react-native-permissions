@@ -4,12 +4,16 @@
 
 @implementation RNPermissionHandlerSpeechRecognition
 
++ (NSString * _Nonnull)uniqueRequestingId {
+  return @"speech-recognition";
+}
+
 + (NSArray<NSString *> *)usageDescriptionKeys {
   return @[@"NSSpeechRecognitionUsageDescription"];
 }
 
-- (void)checkWithResolver:(void (^)(RNPermissionStatus status))resolve
-             withRejecter:(void (__unused ^)(NSError *error))reject {
+- (void)checkWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                 rejecter:(void (__unused ^ _Nonnull)(NSError * _Nonnull))reject {
   switch ([SFSpeechRecognizer authorizationStatus]) {
     case SFSpeechRecognizerAuthorizationStatusNotDetermined:
       return resolve(RNPermissionStatusNotDetermined);
@@ -22,11 +26,11 @@
   }
 }
 
-- (void)requestWithOptions:(__unused NSDictionary * _Nullable)options
-              withResolver:(void (^)(RNPermissionStatus status))resolve
-              withRejecter:(void (^)(NSError *error))reject {
+- (void)requestWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
+                   rejecter:(void (^ _Nonnull)(NSError * _Nonnull))reject
+                    options:(__unused NSDictionary * _Nullable)options {
   [SFSpeechRecognizer requestAuthorization:^(__unused SFSpeechRecognizerAuthorizationStatus status) {
-    [self checkWithResolver:resolve withRejecter:reject];
+    [self checkWithResolver:resolve rejecter:reject];
   }];
 }
 
