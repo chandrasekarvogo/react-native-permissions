@@ -113,8 +113,6 @@ function extractUnavailables(permissions: string[]) {
   );
 }
 
-// RNPermissions.check(IOS.CAMERA).then(p => console.log(p));
-
 async function internalCheck(permission: string): Promise<PermissionStatus> {
   if (Platform.OS !== 'android') {
     return RNPermissions.check(permission);

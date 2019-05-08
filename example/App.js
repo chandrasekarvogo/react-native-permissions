@@ -42,22 +42,13 @@ const statusIcons: { [PermissionStatus]: string } = {
 
 type AppStateType = 'active' | 'background' | 'inactive';
 
-type Props = {};
-
-// RNPermissions.checkMultiple([
-//   RNPermissions.PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
-//   RNPermissions.PERMISSIONS.ANDROID.PROCESS_OUTGOING_CALLS,
-// ]).then(result => {
-//   console.log(result);
-// });
-
 type State = {|
   snackBarVisible: boolean,
   watchAppState: boolean,
   statuses: { [permisson: string]: PermissionStatus },
 |};
 
-export default class App extends React.Component<Props, State> {
+export default class App extends React.Component<{}, State> {
   constructor(props: Props) {
     super(props);
 
