@@ -243,8 +243,8 @@ checkMultiple([
   PERMISSIONS.IOS.LOCATION_ALWAYS,
   PERMISSIONS.IOS.MEDIA_LIBRARY,
 ]).then(results => {
-  // results.LOCATION_ALWAYS
-  // results.MEDIA_LIBRARY
+  // results[PERMISSIONS.IOS.LOCATION_ALWAYS]
+  // results[PERMISSIONS.IOS.MEDIA_LIBRARY]
 });
 ```
 
@@ -315,8 +315,8 @@ requestMultiple([
   PERMISSIONS.IOS.LOCATION_ALWAYS,
   PERMISSIONS.IOS.MEDIA_LIBRARY,
 ]).then(results => {
-  // results.LOCATION_ALWAYS
-  // results.MEDIA_LIBRARY
+  // results[PERMISSIONS.IOS.LOCATION_ALWAYS]
+  // results[PERMISSIONS.IOS.MEDIA_LIBRARY]
 });
 ```
 
