@@ -176,13 +176,6 @@ PERMISSIONS.IOS.STOREKIT;
 _types used in usage examples_
 
 ```ts
-type Permission =
-  | 'android.permission.READ_CALENDAR'
-  | 'android.permission.WRITE_CALENDAR'
-  // …
-  | 'ios.permission.SPEECH_RECOGNITION'
-  | 'ios.permission.STOREKIT';
-
 type PermissionStatus =
   | 'granted'
   | 'denied'
@@ -197,7 +190,7 @@ Check one permission status.
 #### Method type
 
 ```ts
-function check(permission: Permission): Promise<PermissionStatus>;
+function check(permission: string): Promise<PermissionStatus>;
 ```
 
 #### Usage example
@@ -237,8 +230,8 @@ Check multiples permissions.
 
 ```ts
 function checkMultiple(
-  permissions: Permission[],
-): Promise<{ [permission: Permission]: PermissionStatus }>;
+  permissions: string[],
+): Promise<{ [permission: string]: PermissionStatus }>;
 ```
 
 #### Usage example
@@ -281,7 +274,7 @@ type Rationale = {
 };
 
 function request(
-  permission: Permission,
+  permission: string,
   config: {
     notificationOptions?: NotificationOption[];
     rationale?: Rationale;
@@ -309,8 +302,8 @@ Request multiples permissions.
 
 ```ts
 function requestMultiple(
-  permissions: Permission[],
-): Promise<{ [permission: Permission]: PermissionStatus }>;
+  permissions: string[],
+): Promise<{ [permission: string]: PermissionStatus }>;
 ```
 
 #### Usage example

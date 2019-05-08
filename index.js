@@ -54,14 +54,7 @@ const IOS = Object.freeze({
   STOREKIT: 'ios.permission.STOREKIT',
 });
 
-export type AndroidPermission = $Values<typeof ANDROID>;
-export type IOSPermission = $Values<typeof IOS>;
-export type Permission = AndroidPermission | IOSPermission;
-
-export const PERMISSIONS: {
-  ANDROID: $ObjMap<typeof ANDROID, () => AndroidPermission>,
-  IOS: $ObjMap<typeof IOS, () => IOSPermission>,
-} = { ANDROID, IOS };
+export const PERMISSIONS = { ANDROID, IOS };
 
 export const RESULTS = Object.freeze({
   GRANTED: 'granted',
@@ -97,7 +90,7 @@ const platformPermissions = Object.values(
   Platform.OS === 'ios' ? IOS : ANDROID,
 );
 
-function assertPermission(permission: Permission) {
+function assertPermission(permission: string) {
   if (!platformPermissions.includes(permission)) {
     let message = `Invalid ${Platform.OS} permission "${permission}".`;
     message += ' Must be one of:\n\n• ';
@@ -107,7 +100,7 @@ function assertPermission(permission: Permission) {
   }
 }
 
-function extractUnavailables(permissions: Permission[]) {
+function extractUnavailables(permissions: string[]) {
   return Promise.all(
     permissions.map(p => RNPermissions.isPermissionAvailable(p)),
   ).then(availabilities =>
@@ -122,9 +115,7 @@ function extractUnavailables(permissions: Permission[]) {
 
 // RNPermissions.check(IOS.CAMERA).then(p => console.log(p));
 
-async function internalCheck(
-  permission: Permission,
-): Promise<PermissionStatus> {
+async function internalCheck(permission: string): Promise<PermissionStatus> {
   if (Platform.OS !== 'android') {
     return RNPermissions.check(permission);
   }
@@ -147,7 +138,7 @@ async function internalCheck(
 }
 
 async function internalRequest(
-  permission: Permission,
+  permission: string,
   config: RequestConfig = {},
 ): Promise<PermissionStatus> {
   const { notificationOptions, rationale } = config;
@@ -165,8 +156,8 @@ async function internalRequest(
 }
 
 async function internalCheckMultiple(
-  permissions: Permission[],
-): Promise<{ [Permission]: PermissionStatus }> {
+  permissions: string[],
+): Promise<{ [permission: string]: PermissionStatus }> {
   let result = {};
   let availables = permissions;
 
@@ -188,8 +179,8 @@ async function internalCheckMultiple(
 }
 
 async function internalRequestMultiple(
-  permissions: Permission[],
-): Promise<{ [Permission]: PermissionStatus }> {
+  permissions: string[],
+): Promise<{ [permission: string]: PermissionStatus }> {
   if (Platform.OS !== 'android') {
     const result = {};
 
@@ -221,7 +212,7 @@ export function openSettings(): Promise<void> {
   return RNPermissions.openSettings().then(() => {});
 }
 
-export function check(permission: Permission): Promise<PermissionStatus> {
+export function check(permission: string): Promise<PermissionStatus> {
   // $FlowFixMe
   if (__DEV__) {
     assertPermission(permission);
@@ -230,8 +221,8 @@ export function check(permission: Permission): Promise<PermissionStatus> {
 }
 
 export function checkMultiple(
-  permissions: Permission[],
-): Promise<{ [Permission]: PermissionStatus }> {
+  permissions: string[],
+): Promise<{ [permission: string]: PermissionStatus }> {
   // $FlowFixMe
   if (__DEV__) {
     permissions.forEach(assertPermission);
@@ -240,7 +231,7 @@ export function checkMultiple(
 }
 
 export function request(
-  permission: Permission,
+  permission: string,
   config: RequestConfig = {},
 ): Promise<PermissionStatus> {
   // $FlowFixMe
@@ -251,8 +242,8 @@ export function request(
 }
 
 export function requestMultiple(
-  permissions: Permission[],
-): Promise<{ [Permission]: PermissionStatus }> {
+  permissions: string[],
+): Promise<{ [permission: string]: PermissionStatus }> {
   // $FlowFixMe
   if (__DEV__) {
     permissions.forEach(assertPermission);

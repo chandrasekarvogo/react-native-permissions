@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Appbar, List, TouchableRipple, Snackbar } from 'react-native-paper';
 import * as RNPermissions from 'react-native-permissions';
-import type { Permission, PermissionStatus } from 'react-native-permissions';
+import type { PermissionStatus } from 'react-native-permissions';
 import theme from './theme';
 
 import {
@@ -23,7 +23,8 @@ const platformPermissions =
   Platform.OS === 'android' ? PERMISSIONS.ANDROID : IOS_PERMISSIONS;
 
 const permissionsKeys = Object.keys(platformPermissions);
-const permissionsValues = Object.values(platformPermissions);
+// $FlowFixMe
+const permissionsValues: string[] = Object.values(platformPermissions);
 
 const statusColors: { [PermissionStatus]: string } = {
   granted: '#43a047',
@@ -44,8 +45,8 @@ type AppStateType = 'active' | 'background' | 'inactive';
 type Props = {};
 
 // RNPermissions.checkMultiple([
-//   RNPermissions.ANDROID_PERMISSIONS.ACCESS_FINE_LOCATION,
-//   RNPermissions.ANDROID_PERMISSIONS.PROCESS_OUTGOING_CALLS,
+//   RNPermissions.PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+//   RNPermissions.PERMISSIONS.ANDROID.PROCESS_OUTGOING_CALLS,
 // ]).then(result => {
 //   console.log(result);
 // });
@@ -53,7 +54,7 @@ type Props = {};
 type State = {|
   snackBarVisible: boolean,
   watchAppState: boolean,
-  statuses: { [Permission]: PermissionStatus },
+  statuses: { [permisson: string]: PermissionStatus },
 |};
 
 export default class App extends React.Component<Props, State> {
@@ -80,15 +81,9 @@ export default class App extends React.Component<Props, State> {
   }
 
   checkAllPermissions = () => {
-    // $FlowFixMe
     RNPermissions.checkMultiple(permissionsValues)
-      .then(statuses => {
-        // $FlowFixMe
-        this.setState({ statuses });
-      })
-      .catch(error => {
-        console.error(error);
-      });
+      .then(statuses => this.setState({ statuses }))
+      .catch(error => console.error(error));
   };
 
   onAppStateChange = (nextAppState: AppStateType) => {
@@ -131,34 +126,35 @@ export default class App extends React.Component<Props, State> {
 
         <ScrollView>
           <List.Section>
-            {permissionsValues.map(value => {
-              const key = permissionsKeys[permissionsValues.indexOf(value)];
-              const status = this.state.statuses[value];
+            {permissionsValues.map(permissionValue => {
+              const permissionKey =
+                permissionsKeys[permissionsValues.indexOf(permissionValue)];
+              const status = this.state.statuses[permissionValue];
 
               return (
                 <TouchableRipple
-                  key={key}
+                  key={permissionKey}
                   disabled={
                     status === RNPermissions.RESULTS.UNAVAILABLE ||
                     status === RNPermissions.RESULTS.NEVER_ASK_AGAIN
                   }
                   onPress={() => {
-                    // $FlowFixMe
-                    RNPermissions.request(platformPermissions[key]).then(
-                      result => {
-                        this.setState(prevState => ({
-                          ...prevState,
-                          statuses: {
-                            ...prevState.statuses,
-                            [value]: result,
-                          },
-                        }));
-                      },
-                    );
+                    RNPermissions.request(
+                      // $FlowFixMe
+                      platformPermissions[permissionKey],
+                    ).then(result => {
+                      this.setState(prevState => ({
+                        ...prevState,
+                        statuses: {
+                          ...prevState.statuses,
+                          [permissionValue]: result,
+                        },
+                      }));
+                    });
                   }}
                 >
                   <List.Item
-                    title={key}
+                    title={permissionKey}
                     description={status}
                     right={() => (
                       <List.Icon
