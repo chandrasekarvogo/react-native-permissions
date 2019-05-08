@@ -4,52 +4,52 @@
 
 RCT_ENUM_CONVERTER(RNPermission, (@{
 #if __has_include("RNPermissionHandlerBluetoothPeripheral.h")
-  @"BLUETOOTH_PERIPHERAL": @(RNPermissionBluetoothPeripheral),
+  @"ios.permission.BLUETOOTH_PERIPHERAL": @(RNPermissionBluetoothPeripheral),
 #endif
 #if __has_include("RNPermissionHandlerCalendars.h")
-  @"CALENDARS": @(RNPermissionCalendars),
+  @"ios.permission.CALENDARS": @(RNPermissionCalendars),
 #endif
 #if __has_include("RNPermissionHandlerCamera.h")
-  @"CAMERA": @(RNPermissionCamera),
+  @"ios.permission.CAMERA": @(RNPermissionCamera),
 #endif
 #if __has_include("RNPermissionHandlerContacts.h")
-  @"CONTACTS": @(RNPermissionContacts),
+  @"ios.permission.CONTACTS": @(RNPermissionContacts),
 #endif
 #if __has_include("RNPermissionHandlerFaceID.h")
-  @"FACE_ID": @(RNPermissionFaceID),
+  @"ios.permission.FACE_ID": @(RNPermissionFaceID),
 #endif
 #if __has_include("RNPermissionHandlerLocationAlways.h")
-  @"LOCATION_ALWAYS": @(RNPermissionLocationAlways),
+  @"ios.permission.LOCATION_ALWAYS": @(RNPermissionLocationAlways),
 #endif
 #if __has_include("RNPermissionHandlerLocationWhenInUse.h")
-  @"LOCATION_WHEN_IN_USE": @(RNPermissionLocationWhenInUse),
+  @"ios.permission.LOCATION_WHEN_IN_USE": @(RNPermissionLocationWhenInUse),
 #endif
 #if __has_include("RNPermissionHandlerMediaLibrary.h")
-  @"MEDIA_LIBRARY": @(RNPermissionMediaLibrary),
+  @"ios.permission.MEDIA_LIBRARY": @(RNPermissionMediaLibrary),
 #endif
 #if __has_include("RNPermissionHandlerMicrophone.h")
-  @"MICROPHONE": @(RNPermissionMicrophone),
+  @"ios.permission.MICROPHONE": @(RNPermissionMicrophone),
 #endif
 #if __has_include("RNPermissionHandlerMotion.h")
-  @"MOTION": @(RNPermissionMotion),
+  @"ios.permission.MOTION": @(RNPermissionMotion),
 #endif
 #if __has_include("RNPermissionHandlerNotifications.h")
-  @"NOTIFICATIONS": @(RNPermissionNotifications),
+  @"ios.permission.NOTIFICATIONS": @(RNPermissionNotifications),
 #endif
 #if __has_include("RNPermissionHandlerPhotoLibrary.h")
-  @"PHOTO_LIBRARY": @(RNPermissionPhotoLibrary),
+  @"ios.permission.PHOTO_LIBRARY": @(RNPermissionPhotoLibrary),
 #endif
 #if __has_include("RNPermissionHandlerReminders.h")
-  @"REMINDERS": @(RNPermissionReminders),
+  @"ios.permission.REMINDERS": @(RNPermissionReminders),
 #endif
 #if __has_include("RNPermissionHandlerSiri.h")
-  @"SIRI": @(RNPermissionSiri),
+  @"ios.permission.SIRI": @(RNPermissionSiri),
 #endif
 #if __has_include("RNPermissionHandlerSpeechRecognition.h")
-  @"SPEECH_RECOGNITION": @(RNPermissionSpeechRecognition),
+  @"ios.permission.SPEECH_RECOGNITION": @(RNPermissionSpeechRecognition),
 #endif
 #if __has_include("RNPermissionHandlerStoreKit.h")
-  @"STOREKIT": @(RNPermissionStoreKit),
+  @"ios.permission.STOREKIT": @(RNPermissionStoreKit),
 #endif
 }),
   RNPermissionUnknown, integerValue

@@ -1,64 +1,81 @@
 // @flow
 
-import {
-  AsyncStorage,
-  NativeModules,
-  PermissionsAndroid,
-  Platform,
-  // $FlowFixMe
-} from 'react-native';
-
+import { NativeModules, PermissionsAndroid, Platform } from 'react-native';
 const { RNPermissions } = NativeModules;
 
-export const ANDROID_PERMISSIONS = {
-  ...PermissionsAndroid.PERMISSIONS,
+const ANDROID = Object.freeze({
+  READ_CALENDAR: 'android.permission.READ_CALENDAR',
+  WRITE_CALENDAR: 'android.permission.WRITE_CALENDAR',
+  CAMERA: 'android.permission.CAMERA',
+  READ_CONTACTS: 'android.permission.READ_CONTACTS',
+  WRITE_CONTACTS: 'android.permission.WRITE_CONTACTS',
+  GET_ACCOUNTS: 'android.permission.GET_ACCOUNTS',
+  ACCESS_FINE_LOCATION: 'android.permission.ACCESS_FINE_LOCATION',
+  ACCESS_COARSE_LOCATION: 'android.permission.ACCESS_COARSE_LOCATION',
+  RECORD_AUDIO: 'android.permission.RECORD_AUDIO',
+  READ_PHONE_STATE: 'android.permission.READ_PHONE_STATE',
+  CALL_PHONE: 'android.permission.CALL_PHONE',
+  READ_CALL_LOG: 'android.permission.READ_CALL_LOG',
+  WRITE_CALL_LOG: 'android.permission.WRITE_CALL_LOG',
+  ADD_VOICEMAIL: 'com.android.voicemail.permission.ADD_VOICEMAIL',
+  USE_SIP: 'android.permission.USE_SIP',
+  PROCESS_OUTGOING_CALLS: 'android.permission.PROCESS_OUTGOING_CALLS',
+  BODY_SENSORS: 'android.permission.BODY_SENSORS',
+  SEND_SMS: 'android.permission.SEND_SMS',
+  RECEIVE_SMS: 'android.permission.RECEIVE_SMS',
+  READ_SMS: 'android.permission.READ_SMS',
+  RECEIVE_WAP_PUSH: 'android.permission.RECEIVE_WAP_PUSH',
+  RECEIVE_MMS: 'android.permission.RECEIVE_MMS',
+  READ_EXTERNAL_STORAGE: 'android.permission.READ_EXTERNAL_STORAGE',
+  WRITE_EXTERNAL_STORAGE: 'android.permission.WRITE_EXTERNAL_STORAGE',
   // Dangerous permissions not included in PermissionsAndroid
-  // They might be unavailable in the current OS
+  // They might be unavailable in the current OS version
   ANSWER_PHONE_CALLS: 'android.permission.ANSWER_PHONE_CALLS',
   ACCEPT_HANDOVER: 'android.permission.ACCEPT_HANDOVER',
   READ_PHONE_NUMBERS: 'android.permission.READ_PHONE_NUMBERS',
-};
+});
 
-// function keyMirror<O: {}>(obj: O): $ObjMapi<O, <K>(k: K) => K> {
-//   return Object.keys(obj).reduce((acc, key) => ({ ...acc, [key]: key }), {});
-// }
+const IOS = Object.freeze({
+  BLUETOOTH_PERIPHERAL: 'ios.permission.BLUETOOTH_PERIPHERAL',
+  CALENDARS: 'ios.permission.CALENDARS',
+  CAMERA: 'ios.permission.CAMERA',
+  CONTACTS: 'ios.permission.CONTACTS',
+  FACE_ID: 'ios.permission.FACE_ID',
+  LOCATION_ALWAYS: 'ios.permission.LOCATION_ALWAYS',
+  LOCATION_WHEN_IN_USE: 'ios.permission.LOCATION_WHEN_IN_USE',
+  MEDIA_LIBRARY: 'ios.permission.MEDIA_LIBRARY',
+  MICROPHONE: 'ios.permission.MICROPHONE',
+  MOTION: 'ios.permission.MOTION',
+  NOTIFICATIONS: 'ios.permission.NOTIFICATIONS',
+  PHOTO_LIBRARY: 'ios.permission.PHOTO_LIBRARY',
+  REMINDERS: 'ios.permission.REMINDERS',
+  SIRI: 'ios.permission.SIRI',
+  SPEECH_RECOGNITION: 'ios.permission.SPEECH_RECOGNITION',
+  STOREKIT: 'ios.permission.STOREKIT',
+});
 
-export const IOS_PERMISSIONS = {
-  BLUETOOTH_PERIPHERAL: 'BLUETOOTH_PERIPHERAL',
-  CALENDARS: 'CALENDARS',
-  CAMERA: 'CAMERA',
-  CONTACTS: 'CONTACTS',
-  FACE_ID: 'FACE_ID',
-  LOCATION_ALWAYS: 'LOCATION_ALWAYS',
-  LOCATION_WHEN_IN_USE: 'LOCATION_WHEN_IN_USE',
-  MEDIA_LIBRARY: 'MEDIA_LIBRARY',
-  MICROPHONE: 'MICROPHONE',
-  MOTION: 'MOTION',
-  NOTIFICATIONS: 'NOTIFICATIONS',
-  PHOTO_LIBRARY: 'PHOTO_LIBRARY',
-  REMINDERS: 'REMINDERS',
-  SIRI: 'SIRI',
-  SPEECH_RECOGNITION: 'SPEECH_RECOGNITION',
-  STOREKIT: 'STOREKIT',
-};
+export type AndroidPermission = $Values<typeof ANDROID>;
+export type IOSPermission = $Values<typeof IOS>;
+export type Permission = AndroidPermission | IOSPermission;
 
-export const RESULTS = {
+export const PERMISSIONS: {
+  ANDROID: $ObjMap<typeof ANDROID, () => AndroidPermission>,
+  IOS: $ObjMap<typeof IOS, () => IOSPermission>,
+} = { ANDROID, IOS };
+
+export const RESULTS = Object.freeze({
   GRANTED: 'granted',
   DENIED: 'denied',
   NEVER_ASK_AGAIN: 'never_ask_again',
   UNAVAILABLE: 'unavailable',
-};
-
-export type Permission =
-  | $Keys<typeof ANDROID_PERMISSIONS>
-  | $Keys<typeof IOS_PERMISSIONS>;
+});
 
 export type PermissionStatus = $Values<typeof RESULTS>;
 
 export type Rationale = {|
   title: string,
   message: string,
-  buttonPositive: string,
+  buttonPositive?: string,
   buttonNegative?: string,
   buttonNeutral?: string,
 |};
@@ -77,44 +94,33 @@ export type RequestConfig = {
 };
 
 const platformPermissions = Object.values(
-  Platform.OS === 'ios' ? IOS_PERMISSIONS : ANDROID_PERMISSIONS,
+  Platform.OS === 'ios' ? IOS : ANDROID,
 );
 
-function assertValidPermission(permission: string) {
+function assertPermission(permission: Permission) {
   if (!platformPermissions.includes(permission)) {
-    const bulletsList = `• ${platformPermissions.join('\n• ')}`;
-    const alertSentence = `Invalid ${
-      Platform.OS
-    } permission "${permission}". Must be one of:\n\n`;
+    let message = `Invalid ${Platform.OS} permission "${permission}".`;
+    message += ' Must be one of:\n\n• ';
+    message += platformPermissions.join('\n• ');
 
-    throw new Error(`${alertSentence}${bulletsList}`);
+    throw new Error(message);
   }
 }
 
-function getUnavailablePermissions(permissions: string[]) {
+function extractUnavailables(permissions: Permission[]) {
   return Promise.all(
     permissions.map(p => RNPermissions.isPermissionAvailable(p)),
   ).then(availabilities =>
     availabilities.reduce((acc, available, i) => {
-      return !available
-        ? { ...acc, [permissions[i]]: RESULTS.UNAVAILABLE }
-        : acc;
+      if (!available) {
+        acc[permissions[i]] = RESULTS.UNAVAILABLE;
+      }
+      return acc;
     }, {}),
   );
 }
 
-const requestedKey = '@RNPermissions:requested';
-
-async function getRequestedPermissions() {
-  const requested = await AsyncStorage.getItem(requestedKey);
-  return requested ? JSON.parse(requested) : [];
-}
-
-async function setRequestedPermissions(permissions: string[]) {
-  const requested = await getRequestedPermissions();
-  const dedup = [...new Set([...requested, ...permissions])];
-  return AsyncStorage.setItem(requestedKey, JSON.stringify(dedup));
-}
+// RNPermissions.check(IOS.CAMERA).then(p => console.log(p));
 
 async function internalCheck(
   permission: Permission,
@@ -129,7 +135,7 @@ async function internalCheck(
   if (await PermissionsAndroid.check(permission)) {
     return RESULTS.GRANTED;
   }
-  if (!(await getRequestedPermissions()).includes(permission)) {
+  if (!(await RNPermissions.hasAlreadyBeenRequested(permission))) {
     return RESULTS.DENIED;
   }
 
@@ -141,7 +147,7 @@ async function internalCheck(
 }
 
 async function internalRequest(
-  permission: string,
+  permission: Permission,
   config: RequestConfig = {},
 ): Promise<PermissionStatus> {
   const { notificationOptions, rationale } = config;
@@ -155,25 +161,27 @@ async function internalRequest(
   }
 
   const status = await PermissionsAndroid.request(permission, rationale);
-  return setRequestedPermissions([permission]).then(() => status);
+  return RNPermissions.setPermissionAsRequested(permission).then(() => status);
 }
 
 async function internalCheckMultiple(
   permissions: Permission[],
-): Promise<{ [permission: Permission]: PermissionStatus }> {
-  let available = permissions;
+): Promise<{ [Permission]: PermissionStatus }> {
   let result = {};
+  let availables = permissions;
 
   if (Platform.OS === 'android') {
-    result = await getUnavailablePermissions(permissions);
-    const unavailable = Object.keys(result);
-    available = permissions.filter(p => !unavailable.includes(p));
+    const unavailables = await extractUnavailables(permissions);
+    const unavailablesKeys = Object.keys(result);
+    result = unavailables;
+    availables = permissions.filter(p => !unavailablesKeys.includes(p));
   }
 
-  return Promise.all(available.map(p => internalCheck(p)))
+  return Promise.all(availables.map(p => internalCheck(p)))
     .then(statuses =>
       statuses.reduce((acc, status, i) => {
-        return { ...acc, [available[i]]: status };
+        acc[availables[i]] = status;
+        return acc;
       }, {}),
     )
     .then(statuses => ({ ...result, ...statuses }));
@@ -181,55 +189,73 @@ async function internalCheckMultiple(
 
 async function internalRequestMultiple(
   permissions: Permission[],
-): Promise<{ [permission: Permission]: PermissionStatus }> {
+): Promise<{ [Permission]: PermissionStatus }> {
   if (Platform.OS !== 'android') {
     const result = {};
 
     for (let i = 0; i < permissions.length; i++) {
       const permission = permissions[i];
-      result[permission] = await internalRequest(permission); // once at the time
+      // ask once at the time on iOS
+      result[permission] = await internalRequest(permission);
     }
 
     return result;
+  } else {
+    const unavailables = await extractUnavailables(permissions);
+    const unavailablesKeys = Object.keys(unavailables);
+
+    const availables = await PermissionsAndroid.requestMultiple(
+      permissions.filter(p => !unavailablesKeys.includes(p)),
+    );
+
+    return Promise.all(
+      permissions.map(p => RNPermissions.setPermissionAsRequested(p)),
+    ).then(() => ({
+      ...availables,
+      ...unavailables,
+    }));
   }
-
-  const result = await getUnavailablePermissions(permissions);
-  const unavailable = Object.keys(result);
-
-  const statuses = await PermissionsAndroid.requestMultiple(
-    permissions.filter(p => !unavailable.includes(p)),
-  ).then(statuses => ({ ...result, ...statuses }));
-
-  return setRequestedPermissions(permissions).then(() => statuses);
 }
 
-export function openSettings(): Promise<boolean> {
-  return RNPermissions.openSettings();
+export function openSettings(): Promise<void> {
+  return RNPermissions.openSettings().then(() => {});
 }
 
 export function check(permission: Permission): Promise<PermissionStatus> {
-  assertValidPermission(permission);
+  // $FlowFixMe
+  if (__DEV__) {
+    assertPermission(permission);
+  }
   return internalCheck(permission);
 }
 
-export function checkMultiple<P: Permission>(
-  permissions: P[],
-): Promise<{ [permission: P]: PermissionStatus }> {
-  permissions.forEach(assertValidPermission);
+export function checkMultiple(
+  permissions: Permission[],
+): Promise<{ [Permission]: PermissionStatus }> {
+  // $FlowFixMe
+  if (__DEV__) {
+    permissions.forEach(assertPermission);
+  }
   return internalCheckMultiple(permissions);
 }
 
 export function request(
-  permission: string,
+  permission: Permission,
   config: RequestConfig = {},
 ): Promise<PermissionStatus> {
-  assertValidPermission(permission);
+  // $FlowFixMe
+  if (__DEV__) {
+    assertPermission(permission);
+  }
   return internalRequest(permission, config);
 }
 
-export function requestMultiple<P: Permission>(
-  permissions: P[],
-): Promise<{ [permission: P]: PermissionStatus }> {
-  permissions.forEach(assertValidPermission);
+export function requestMultiple(
+  permissions: Permission[],
+): Promise<{ [Permission]: PermissionStatus }> {
+  // $FlowFixMe
+  if (__DEV__) {
+    permissions.forEach(assertPermission);
+  }
   return internalRequestMultiple(permissions);
 }

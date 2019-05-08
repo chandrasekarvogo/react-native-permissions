@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Appbar, List, TouchableRipple, Snackbar } from 'react-native-paper';
 import * as RNPermissions from 'react-native-permissions';
-import type { PermissionStatus } from 'react-native-permissions';
+import type { Permission, PermissionStatus } from 'react-native-permissions';
 import theme from './theme';
 
 import {
@@ -15,12 +15,15 @@ import {
   View,
 } from 'react-native';
 
-// $FlowFixMe
-let platformPermissions: string[] = Object.values(
-  Platform.OS === 'ios'
-    ? RNPermissions.IOS_PERMISSIONS
-    : RNPermissions.ANDROID_PERMISSIONS,
-).filter(permission => permission !== 'SIRI');
+const { PERMISSIONS } = RNPermissions;
+// we remove siri from the example since it needs a certificate
+const { SIRI, ...IOS_PERMISSIONS } = PERMISSIONS.IOS;
+
+const platformPermissions =
+  Platform.OS === 'android' ? PERMISSIONS.ANDROID : IOS_PERMISSIONS;
+
+const permissionsKeys = Object.keys(platformPermissions);
+const permissionsValues = Object.values(platformPermissions);
 
 const statusColors: { [PermissionStatus]: string } = {
   granted: '#43a047',
@@ -50,7 +53,7 @@ type Props = {};
 type State = {|
   snackBarVisible: boolean,
   watchAppState: boolean,
-  statuses: { [string]: PermissionStatus },
+  statuses: { [Permission]: PermissionStatus },
 |};
 
 export default class App extends React.Component<Props, State> {
@@ -77,9 +80,10 @@ export default class App extends React.Component<Props, State> {
   }
 
   checkAllPermissions = () => {
-    RNPermissions.checkMultiple(platformPermissions)
+    // $FlowFixMe
+    RNPermissions.checkMultiple(permissionsValues)
       .then(statuses => {
-        console.log(statuses);
+        // $FlowFixMe
         this.setState({ statuses });
       })
       .catch(error => {
@@ -127,30 +131,34 @@ export default class App extends React.Component<Props, State> {
 
         <ScrollView>
           <List.Section>
-            {platformPermissions.map(permission => {
-              const status = this.state.statuses[permission];
+            {permissionsValues.map(value => {
+              const key = permissionsKeys[permissionsValues.indexOf(value)];
+              const status = this.state.statuses[value];
 
               return (
                 <TouchableRipple
-                  key={permission}
+                  key={key}
                   disabled={
                     status === RNPermissions.RESULTS.UNAVAILABLE ||
                     status === RNPermissions.RESULTS.NEVER_ASK_AGAIN
                   }
                   onPress={() => {
-                    RNPermissions.request(permission).then(result => {
-                      this.setState(prevState => ({
-                        ...prevState,
-                        statuses: {
-                          ...prevState.statuses,
-                          [permission]: result,
-                        },
-                      }));
-                    });
+                    // $FlowFixMe
+                    RNPermissions.request(platformPermissions[key]).then(
+                      result => {
+                        this.setState(prevState => ({
+                          ...prevState,
+                          statuses: {
+                            ...prevState.statuses,
+                            [value]: result,
+                          },
+                        }));
+                      },
+                    );
                   }}
                 >
                   <List.Item
-                    title={permission}
+                    title={key}
                     description={status}
                     right={() => (
                       <List.Icon

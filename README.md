@@ -6,15 +6,15 @@
 ![MIT](https://img.shields.io/dub/l/vibe-d.svg)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-Request user permissions on iOS and Android.
+Check and request user permissions in React Native
 
-### ⚠️  Branch WIP 2.0.0 : Go to [pull request #291](https://github.com/yonahforst/react-native-permissions/pull/291) for feedbacks.
+### ⚠️  Branch "master" is a WIP of version 2.0.0
 
 ## Support
 
 | version | react-native version |
 | ------- | -------------------- |
-| 2.0.0+  | 0.56.0+              |
+| 2.0.0+  | 0.59.5+              |
 | 1.1.1   | 0.40.0 - 0.52.2      |
 
 ## Setup
@@ -25,7 +25,7 @@ $ npm install --save react-native-permissions
 $ yarn add react-native-permissions
 ```
 
-### iOS specific
+### iOS
 
 To allow installation of the needed permission handlers for your project (and only them), `react-native-permissions` uses CocoaPods. Update the following line with your path to `node_modules/` and add it to your podfile:
 
@@ -36,7 +36,7 @@ target 'YourAwesomeProject' do
 
   pod 'RNPermissions', :path => '../node_modules/react-native-permissions', :subspecs => [
     'Core',
-    ## Uncomment needed permissions
+    ## Uncomment wanted permissions
     # 'BluetoothPeripheral',
     # 'Calendars',
     # 'Camera',
@@ -58,7 +58,7 @@ target 'YourAwesomeProject' do
 end
 ```
 
-### Android specific
+### Android
 
 1.  Add the following lines to `android/settings.gradle`:
 
@@ -79,7 +79,7 @@ dependencies {
 3.  Add the import and link the package in `MainApplication.java`:
 
 ```java
-import com.yonahforst.rnpermissions.RNPermissionsPackage; // <-- Add the import
+import com.reactnativecommunity.rnpermissions.RNPermissionsPackage; // <-- Add the import
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -99,77 +99,76 @@ public class MainApplication extends Application implements ReactApplication {
 ```
 
 _📌 Don't forget to add permissions to `AndroidManifest.xml` for android and
-`Info.plist` for iOS (Xcode >= 8)._
+`Info.plist` for iOS._
 
-## API (subject to changes)
+## API
 
 ### Permissions statuses
 
 Promises resolve into one of these statuses:
 
-| Return value              | Notes                                                              |
-| ------------------------- | ------------------------------------------------------------------ |
-| `RESULTS.UNAVAILABLE`     | This feature is not available on this device.                      |
-| `RESULTS.GRANTED`         | The permission is granted.                                         |
-| `RESULTS.DENIED`          | The permission has not been requested / is denied but requestable. |
-| `RESULTS.NEVER_ASK_AGAIN` | The permission is not requestable anymore.                         |
+| Return value              | Notes                                                             |
+| ------------------------- | ----------------------------------------------------------------- |
+| `RESULTS.UNAVAILABLE`     | This feature is not available (on this device / in this context)  |
+| `RESULTS.GRANTED`         | The permission is granted                                         |
+| `RESULTS.DENIED`          | The permission has not been requested / is denied but requestable |
+| `RESULTS.NEVER_ASK_AGAIN` | The permission is denied and not requestable anymore              |
 
 ### Supported permissions
 
 ```js
-import { ANDROID_PERMISSIONS, IOS_PERMISSIONS } from 'react-native-permissions';
+import { PERMISSIONS } from 'react-native-permissions';
 
-// For Android
+// Android permissions
 
-// same as PermissionsAndroid
-ANDROID_PERMISSIONS.READ_CALENDAR;
-ANDROID_PERMISSIONS.WRITE_CALENDAR;
-ANDROID_PERMISSIONS.CAMERA;
-ANDROID_PERMISSIONS.READ_CONTACTS;
-ANDROID_PERMISSIONS.WRITE_CONTACTS;
-ANDROID_PERMISSIONS.GET_ACCOUNTS;
-ANDROID_PERMISSIONS.ACCESS_FINE_LOCATION;
-ANDROID_PERMISSIONS.ACCESS_COARSE_LOCATION;
-ANDROID_PERMISSIONS.RECORD_AUDIO;
-ANDROID_PERMISSIONS.READ_PHONE_STATE;
-ANDROID_PERMISSIONS.CALL_PHONE;
-ANDROID_PERMISSIONS.READ_CALL_LOG;
-ANDROID_PERMISSIONS.WRITE_CALL_LOG;
-ANDROID_PERMISSIONS.ADD_VOICEMAIL;
-ANDROID_PERMISSIONS.USE_SIP;
-ANDROID_PERMISSIONS.PROCESS_OUTGOING_CALLS;
-ANDROID_PERMISSIONS.BODY_SENSORS;
-ANDROID_PERMISSIONS.SEND_SMS;
-ANDROID_PERMISSIONS.RECEIVE_SMS;
-ANDROID_PERMISSIONS.READ_SMS;
-ANDROID_PERMISSIONS.RECEIVE_WAP_PUSH;
-ANDROID_PERMISSIONS.RECEIVE_MMS;
-ANDROID_PERMISSIONS.READ_EXTERNAL_STORAGE;
-ANDROID_PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+// similar to PermissionsAndroid
+PERMISSIONS.ANDROID.READ_CALENDAR;
+PERMISSIONS.ANDROID.WRITE_CALENDAR;
+PERMISSIONS.ANDROID.CAMERA;
+PERMISSIONS.ANDROID.READ_CONTACTS;
+PERMISSIONS.ANDROID.WRITE_CONTACTS;
+PERMISSIONS.ANDROID.GET_ACCOUNTS;
+PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
+PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION;
+PERMISSIONS.ANDROID.RECORD_AUDIO;
+PERMISSIONS.ANDROID.READ_PHONE_STATE;
+PERMISSIONS.ANDROID.CALL_PHONE;
+PERMISSIONS.ANDROID.READ_CALL_LOG;
+PERMISSIONS.ANDROID.WRITE_CALL_LOG;
+PERMISSIONS.ANDROID.ADD_VOICEMAIL;
+PERMISSIONS.ANDROID.USE_SIP;
+PERMISSIONS.ANDROID.PROCESS_OUTGOING_CALLS;
+PERMISSIONS.ANDROID.BODY_SENSORS;
+PERMISSIONS.ANDROID.SEND_SMS;
+PERMISSIONS.ANDROID.RECEIVE_SMS;
+PERMISSIONS.ANDROID.READ_SMS;
+PERMISSIONS.ANDROID.RECEIVE_WAP_PUSH;
+PERMISSIONS.ANDROID.RECEIVE_MMS;
+PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE;
+// exclusives ones
+PERMISSIONS.ANDROID.ANSWER_PHONE_CALLS;
+PERMISSIONS.ANDROID.ACCEPT_HANDOVER;
+PERMISSIONS.ANDROID.READ_PHONE_NUMBERS;
 
-// new ones
-ANDROID_PERMISSIONS.ANSWER_PHONE_CALLS;
-ANDROID_PERMISSIONS.ACCEPT_HANDOVER;
-ANDROID_PERMISSIONS.READ_PHONE_NUMBERS;
+// iOS permissions
 
-// For iOS
-
-IOS_PERMISSIONS.BLUETOOTH_PERIPHERAL;
-IOS_PERMISSIONS.CALENDARS;
-IOS_PERMISSIONS.CAMERA;
-IOS_PERMISSIONS.CONTACTS;
-IOS_PERMISSIONS.FACE_ID;
-IOS_PERMISSIONS.LOCATION_ALWAYS;
-IOS_PERMISSIONS.LOCATION_WHEN_IN_USE;
-IOS_PERMISSIONS.MEDIA_LIBRARY;
-IOS_PERMISSIONS.MICROPHONE;
-IOS_PERMISSIONS.MOTION;
-IOS_PERMISSIONS.NOTIFICATIONS;
-IOS_PERMISSIONS.PHOTO_LIBRARY;
-IOS_PERMISSIONS.REMINDERS;
-IOS_PERMISSIONS.SIRI;
-IOS_PERMISSIONS.SPEECH_RECOGNITION;
-IOS_PERMISSIONS.STOREKIT;
+PERMISSIONS.IOS.BLUETOOTH_PERIPHERAL;
+PERMISSIONS.IOS.CALENDARS;
+PERMISSIONS.IOS.CAMERA;
+PERMISSIONS.IOS.CONTACTS;
+PERMISSIONS.IOS.FACE_ID;
+PERMISSIONS.IOS.LOCATION_ALWAYS;
+PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
+PERMISSIONS.IOS.MEDIA_LIBRARY;
+PERMISSIONS.IOS.MICROPHONE;
+PERMISSIONS.IOS.MOTION;
+PERMISSIONS.IOS.NOTIFICATIONS;
+PERMISSIONS.IOS.PHOTO_LIBRARY;
+PERMISSIONS.IOS.REMINDERS;
+PERMISSIONS.IOS.SIRI;
+PERMISSIONS.IOS.SPEECH_RECOGNITION;
+PERMISSIONS.IOS.STOREKIT;
 ```
 
 ### Methods
@@ -177,7 +176,12 @@ IOS_PERMISSIONS.STOREKIT;
 _types used in usage examples_
 
 ```ts
-type Permission = keyof ANDROID_PERMISSIONS | keyof IOS_PERMISSIONS;
+type Permission =
+  | 'android.permission.READ_CALENDAR'
+  | 'android.permission.WRITE_CALENDAR'
+  // …
+  | 'ios.permission.SPEECH_RECOGNITION'
+  | 'ios.permission.STOREKIT';
 
 type PermissionStatus =
   | 'granted'
@@ -199,24 +203,28 @@ function check(permission: Permission): Promise<PermissionStatus>;
 #### Usage example
 
 ```js
-import { check, IOS_PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { check, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
-check(RNPermissions.IOS_PERMISSIONS.LOCATION_ALWAYS).then(result => {
-  switch (result) {
-    case RESULTS.UNAVAILABLE:
-      console.log('the feature is not available on this device');
-      break;
-    case RESULTS.GRANTED:
-      console.log('permission is granted');
-      break;
-    case RESULTS.DENIED:
-      console.log('permission is denied, but requestable');
-      break;
-    case RESULTS.NEVER_ASK_AGAIN:
-      console.log('permission is denied and not requestable');
-      break;
-  }
-});
+check(PERMISSIONS.IOS.LOCATION_ALWAYS)
+  .then(result => {
+    switch (result) {
+      case RESULTS.UNAVAILABLE:
+        console.log('the feature is not available');
+        break;
+      case RESULTS.GRANTED:
+        console.log('permission is granted');
+        break;
+      case RESULTS.DENIED:
+        console.log('permission is denied and / or requestable');
+        break;
+      case RESULTS.NEVER_ASK_AGAIN:
+        console.log('permission is denied and not requestable');
+        break;
+    }
+  })
+  .catch(error => {
+    // …
+  });
 ```
 
 ---
@@ -228,17 +236,19 @@ Check multiples permissions.
 #### Method type
 
 ```ts
-function checkMultiple<P: Permission>(permissions: P[]): Promise<{ [permission: P]: PermissionStatus }>;
+function checkMultiple(
+  permissions: Permission[],
+): Promise<{ [permission: Permission]: PermissionStatus }>;
 ```
 
 #### Usage example
 
 ```js
-import { checkMultiple, IOS_PERMISSIONS } from 'react-native-permissions';
+import { checkMultiple, PERMISSIONS } from 'react-native-permissions';
 
 checkMultiple([
-  IOS_PERMISSIONS.LOCATION_ALWAYS,
-  IOS_PERMISSIONS.MEDIA_LIBRARY,
+  PERMISSIONS.IOS.LOCATION_ALWAYS,
+  PERMISSIONS.IOS.MEDIA_LIBRARY,
 ]).then(results => {
   // results.LOCATION_ALWAYS
   // results.MEDIA_LIBRARY
@@ -265,13 +275,13 @@ type NotificationOption =
 type Rationale = {
   title: string;
   message: string;
-  buttonPositive: string;
+  buttonPositive?: string;
   buttonNegative?: string;
   buttonNeutral?: string;
 };
 
 function request(
-  permission: string,
+  permission: Permission,
   config: {
     notificationOptions?: NotificationOption[];
     rationale?: Rationale;
@@ -282,9 +292,9 @@ function request(
 #### Usage example
 
 ```js
-import { request, IOS_PERMISSIONS } from 'react-native-permissions';
+import { request, PERMISSIONS } from 'react-native-permissions';
 
-request(IOS_PERMISSIONS.LOCATION_ALWAYS).then(result => {
+request(PERMISSIONS.IOS.LOCATION_ALWAYS).then(result => {
   // …
 });
 ```
@@ -298,17 +308,19 @@ Request multiples permissions.
 #### Method type
 
 ```ts
-function requestMultiple<P: Permission>(permissions: P[]): Promise<{ [permission: P]: PermissionStatus }>;
+function requestMultiple(
+  permissions: Permission[],
+): Promise<{ [permission: Permission]: PermissionStatus }>;
 ```
 
 #### Usage example
 
 ```js
-import { requestMultiple, IOS_PERMISSIONS } from 'react-native-permissions';
+import { requestMultiple, PERMISSIONS } from 'react-native-permissions';
 
 requestMultiple([
-  IOS_PERMISSIONS.LOCATION_ALWAYS,
-  IOS_PERMISSIONS.MEDIA_LIBRARY,
+  PERMISSIONS.IOS.LOCATION_ALWAYS,
+  PERMISSIONS.IOS.MEDIA_LIBRARY,
 ]).then(results => {
   // results.LOCATION_ALWAYS
   // results.MEDIA_LIBRARY
@@ -324,18 +336,17 @@ Open application settings.
 #### Method type
 
 ```ts
-function openSettings(): Promise<boolean>;
+function openSettings(): Promise<void>;
 ```
 
 #### Usage example
 
 ```js
-import { openSettings } from "react-native-permissions";
+import { openSettings } from 'react-native-permissions';
 
-openSettings().catch(() => console.warn("cannot open settings");
+openSettings().catch(() => console.warn('cannot open settings'));
 ```
 
 ## 🍎  iOS Notes
 
-- Permission type `BLUETOOTH_PERIPHERAL` represents the status of the `CBPeripheralManager`.
 - If `notificationOptions` config array is omitted on `NOTIFICATIONS` request, it will request `alert`, `badge` and `sound`.
