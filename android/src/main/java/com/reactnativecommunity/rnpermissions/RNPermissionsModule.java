@@ -54,11 +54,14 @@ public class RNPermissionsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void openSettings(final Promise promise) {
     try {
-      ReactApplicationContext context = getReactApplicationContext();
-      Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-      intent.setData(Uri.fromParts("package", context.getPackageName(), null));
-      context.startActivity(intent);
+      final ReactApplicationContext reactContext = getReactApplicationContext();
+      final Intent intent = new Intent();
 
+      intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      intent.setData(Uri.fromParts("package", reactContext.getPackageName(), null));
+
+      reactContext.startActivity(intent);
       promise.resolve(true);
     } catch (Exception e) {
       promise.reject(ERROR_INVALID_ACTIVITY, e);
