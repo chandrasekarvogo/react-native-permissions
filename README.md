@@ -20,9 +20,9 @@ Check and request user permissions in React Native
 ## Setup
 
 ```bash
-$ npm install --save react-native-permissions
+$ npm install --save react-native-permissions@2.0.0-alpha.1
 # --- or ---
-$ yarn add react-native-permissions
+$ yarn add react-native-permissions@2.0.0-alpha.1
 ```
 
 ### iOS
