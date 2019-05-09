@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.homepage            = package["homepage"]
 
   s.default_subspec     = "Core"
-  s.platform            = :ios, "10.0"
+  s.platform            = :ios, "9.0"
   s.requires_arc        = true
   s.static_framework    = true
   s.source              = { :git => s.homepage, :tag => s.version }
