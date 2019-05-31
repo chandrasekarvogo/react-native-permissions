@@ -27,17 +27,17 @@ const permissionsKeys = Object.keys(platformPermissions);
 const permissionsValues: string[] = Object.values(platformPermissions);
 
 const statusColors: { [PermissionStatus]: string } = {
-  granted: '#43a047',
-  denied: '#ff9800',
-  never_ask_again: '#e53935',
   unavailable: '#cfd8dc',
+  denied: '#ff9800',
+  granted: '#43a047',
+  blocked: '#e53935',
 };
 
 const statusIcons: { [PermissionStatus]: string } = {
-  granted: 'check-circle',
-  denied: 'error',
-  never_ask_again: 'cancel',
   unavailable: 'lens',
+  denied: 'error',
+  granted: 'check-circle',
+  blocked: 'cancel',
 };
 
 type AppStateType = 'active' | 'background' | 'inactive';
@@ -127,7 +127,7 @@ export default class App extends React.Component<{}, State> {
                   key={permissionKey}
                   disabled={
                     status === RNPermissions.RESULTS.UNAVAILABLE ||
-                    status === RNPermissions.RESULTS.NEVER_ASK_AGAIN
+                    status === RNPermissions.RESULTS.BLOCKED
                   }
                   onPress={() => {
                     RNPermissions.request(

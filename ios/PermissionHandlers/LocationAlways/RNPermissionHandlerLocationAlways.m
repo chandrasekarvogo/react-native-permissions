@@ -14,11 +14,11 @@
 
 @implementation RNPermissionHandlerLocationAlways
 
-+ (NSString * _Nonnull)uniqueRequestingId {
++ (NSString * _Nonnull)handlerId {
   return @"location-always";
 }
 
-+ (NSArray<NSString *> *)usageDescriptionKeys {
++ (NSArray<NSString *> * _Nonnull)usageDescriptionKeys {
   return @[
     @"NSLocationAlwaysAndWhenInUseUsageDescription",
     @"NSLocationAlwaysUsageDescription",

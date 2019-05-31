@@ -1,7 +1,6 @@
 #import "RNPermissionsManager.h"
-#import "RCTConvert+RNPermission.h"
-
 #import <React/RCTLog.h>
+#import <sys/utsname.h>
 
 #if __has_include("RNPermissionHandlerBluetoothPeripheral.h")
 #import "RNPermissionHandlerBluetoothPeripheral.h"
@@ -52,7 +51,62 @@
 #import "RNPermissionHandlerStoreKit.h"
 #endif
 
-static NSString* requestedSettingName = @"@RNPermissions:requested";
+static NSString* SETTING_KEY = @"@RNPermissions:requested";
+
+@implementation RCTConvert(RNPermission)
+
+RCT_ENUM_CONVERTER(RNPermission, (@{
+#if __has_include("RNPermissionHandlerBluetoothPeripheral.h")
+  [RNPermissionHandlerBluetoothPeripheral handlerId]: @(RNPermissionBluetoothPeripheral),
+#endif
+#if __has_include("RNPermissionHandlerCalendars.h")
+  [RNPermissionHandlerCalendars handlerId]: @(RNPermissionCalendars),
+#endif
+#if __has_include("RNPermissionHandlerCamera.h")
+  [RNPermissionHandlerCamera handlerId]: @(RNPermissionCamera),
+#endif
+#if __has_include("RNPermissionHandlerContacts.h")
+  [RNPermissionHandlerContacts handlerId]: @(RNPermissionContacts),
+#endif
+#if __has_include("RNPermissionHandlerFaceID.h")
+  [RNPermissionHandlerFaceID handlerId]: @(RNPermissionFaceID),
+#endif
+#if __has_include("RNPermissionHandlerLocationAlways.h")
+  [RNPermissionHandlerLocationAlways handlerId]: @(RNPermissionLocationAlways),
+#endif
+#if __has_include("RNPermissionHandlerLocationWhenInUse.h")
+  [RNPermissionHandlerLocationWhenInUse handlerId]: @(RNPermissionLocationWhenInUse),
+#endif
+#if __has_include("RNPermissionHandlerMediaLibrary.h")
+  [RNPermissionHandlerMediaLibrary handlerId]: @(RNPermissionMediaLibrary),
+#endif
+#if __has_include("RNPermissionHandlerMicrophone.h")
+  [RNPermissionHandlerMicrophone handlerId]: @(RNPermissionMicrophone),
+#endif
+#if __has_include("RNPermissionHandlerMotion.h")
+  [RNPermissionHandlerMotion handlerId]: @(RNPermissionMotion),
+#endif
+#if __has_include("RNPermissionHandlerNotifications.h")
+  [RNPermissionHandlerNotifications handlerId]: @(RNPermissionNotifications),
+#endif
+#if __has_include("RNPermissionHandlerPhotoLibrary.h")
+  [RNPermissionHandlerPhotoLibrary handlerId]: @(RNPermissionPhotoLibrary),
+#endif
+#if __has_include("RNPermissionHandlerReminders.h")
+  [RNPermissionHandlerReminders handlerId]: @(RNPermissionReminders),
+#endif
+#if __has_include("RNPermissionHandlerSiri.h")
+  [RNPermissionHandlerSiri handlerId]: @(RNPermissionSiri),
+#endif
+#if __has_include("RNPermissionHandlerSpeechRecognition.h")
+  [RNPermissionHandlerSpeechRecognition handlerId]: @(RNPermissionSpeechRecognition),
+#endif
+#if __has_include("RNPermissionHandlerStoreKit.h")
+  [RNPermissionHandlerStoreKit handlerId]: @(RNPermissionStoreKit),
+#endif
+}), RNPermissionUnknown, integerValue);
+
+@end
 
 @implementation RNPermissionsManager
 
@@ -174,10 +228,22 @@ RCT_EXPORT_MODULE(RNPermissions);
     case RNPermissionStatusNotDetermined:
       return @"denied";
     case RNPermissionStatusDenied:
-      return @"never_ask_again";
+      return @"blocked";
     case RNPermissionStatusAuthorized:
       return @"granted";
   }
+}
+
++ (NSString * _Nonnull)deviceId {
+  struct utsname systemInfo;
+  uname(&systemInfo);
+  NSString* deviceId = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+
+  if ([deviceId isEqualToString:@"i386"] || [deviceId isEqualToString:@"x86_64"] ) {
+    deviceId = [NSString stringWithFormat:@"%s", getenv("SIMULATOR_MODEL_IDENTIFIER")];
+  }
+
+  return deviceId;
 }
 
 + (bool)hasBackgroundModeEnabled:(NSString *)mode {
@@ -186,8 +252,8 @@ RCT_EXPORT_MODULE(RNPermissions);
 }
 
 + (bool)hasAlreadyBeenRequested:(id<RNPermissionHandler>)handler {
-  NSArray *requested = [[NSUserDefaults standardUserDefaults] arrayForKey:requestedSettingName];
-  return [requested containsObject:[[handler class] uniqueRequestingId]];
+  NSArray *requested = [[NSUserDefaults standardUserDefaults] arrayForKey:SETTING_KEY];
+  return [requested containsObject:[[handler class] handlerId]];
 }
 
 RCT_REMAP_METHOD(openSettings,
@@ -227,16 +293,16 @@ RCT_REMAP_METHOD(request,
 
   [handler requestWithResolver:^(RNPermissionStatus status) {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    NSString *handlerRequestingId = [[handler class] uniqueRequestingId];
-    NSMutableArray *requested = [[userDefaults arrayForKey:requestedSettingName] mutableCopy];
+    NSString *handlerId = [[handler class] handlerId];
+    NSMutableArray *requested = [[userDefaults arrayForKey:SETTING_KEY] mutableCopy];
 
     if (requested == nil) {
       requested = [NSMutableArray new];
     }
 
-    if (![requested containsObject:handlerRequestingId]) {
-      [requested addObject:handlerRequestingId];
-      [userDefaults setObject:requested forKey:requestedSettingName];
+    if (![requested containsObject:handlerId]) {
+      [requested addObject:handlerId];
+      [userDefaults setObject:requested forKey:SETTING_KEY];
       [userDefaults synchronize];
     }
 

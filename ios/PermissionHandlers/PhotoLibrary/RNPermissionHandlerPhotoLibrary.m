@@ -4,11 +4,11 @@
 
 @implementation RNPermissionHandlerPhotoLibrary
 
-+ (NSString * _Nonnull)uniqueRequestingId {
++ (NSString * _Nonnull)handlerId {
   return @"photo-library";
 }
 
-+ (NSArray<NSString *> *)usageDescriptionKeys {
++ (NSArray<NSString *> * _Nonnull)usageDescriptionKeys {
   return @[@"NSPhotoLibraryUsageDescription"];
 }
 

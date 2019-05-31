@@ -4,11 +4,11 @@
 
 @implementation RNPermissionHandlerMicrophone
 
-+ (NSString * _Nonnull)uniqueRequestingId {
++ (NSString * _Nonnull)handlerId {
   return @"microphone";
 }
 
-+ (NSArray<NSString *> *)usageDescriptionKeys {
++ (NSArray<NSString *> * _Nonnull)usageDescriptionKeys {
   return @[@"NSMicrophoneUsageDescription"];
 }
 

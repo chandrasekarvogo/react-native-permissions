@@ -11,11 +11,11 @@
 
 @implementation RNPermissionHandlerMotion
 
-+ (NSString * _Nonnull)uniqueRequestingId {
++ (NSString * _Nonnull)handlerId {
   return @"motion";
 }
 
-+ (NSArray<NSString *> *)usageDescriptionKeys {
++ (NSArray<NSString *> * _Nonnull)usageDescriptionKeys {
   return @[@"NSMotionUsageDescription"];
 }
 

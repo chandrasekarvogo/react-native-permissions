@@ -4,12 +4,12 @@
 
 @implementation RNPermissionHandlerStoreKit
 
-+ (NSString * _Nonnull)uniqueRequestingId {
++ (NSString * _Nonnull)handlerId {
   return @"storekit";
 }
 
 + (NSArray<NSString *> * _Nonnull)usageDescriptionKeys {
-  return @[];
+  return @[@"NSAppleMusicUsageDescription"];
 }
 
 - (void)checkWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve

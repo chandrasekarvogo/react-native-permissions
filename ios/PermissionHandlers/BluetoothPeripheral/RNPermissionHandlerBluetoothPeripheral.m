@@ -12,7 +12,7 @@
 
 @implementation RNPermissionHandlerBluetoothPeripheral
 
-+ (NSString * _Nonnull)uniqueRequestingId {
++ (NSString * _Nonnull)handlerId {
   return @"bluetooth-peripheral";
 }
 

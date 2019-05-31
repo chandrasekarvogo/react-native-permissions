@@ -4,11 +4,11 @@
 
 @implementation RNPermissionHandlerCamera
 
-+ (NSString * _Nonnull)uniqueRequestingId {
++ (NSString * _Nonnull)handlerId {
   return @"camera";
 }
 
-+ (NSArray<NSString *> *)usageDescriptionKeys {
++ (NSArray<NSString *> * _Nonnull)usageDescriptionKeys {
   return @[@"NSCameraUsageDescription"];
 }
 

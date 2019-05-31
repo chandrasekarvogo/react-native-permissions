@@ -13,11 +13,11 @@
 
 @implementation RNPermissionHandlerLocationWhenInUse
 
-+ (NSString * _Nonnull)uniqueRequestingId {
++ (NSString * _Nonnull)handlerId {
   return @"location-when-in-use";
 }
 
-+ (NSArray<NSString *> *)usageDescriptionKeys {
++ (NSArray<NSString *> * _Nonnull)usageDescriptionKeys {
   return @[@"NSLocationWhenInUseUsageDescription"];
 }
 

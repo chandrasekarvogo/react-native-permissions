@@ -5,7 +5,7 @@
 
 @implementation RNPermissionHandlerNotifications
 
-+ (NSString * _Nonnull)uniqueRequestingId {
++ (NSString * _Nonnull)handlerId {
   return @"notifications";
 }
 
@@ -31,7 +31,7 @@
     }];
   } else {
     UIUserNotificationSettings *settings = [[UIApplication sharedApplication] currentUserNotificationSettings];
-    
+
     if (settings == nil || settings.types == UIUserNotificationTypeNone) {
       resolve(RNPermissionStatusNotDetermined);
     } else {

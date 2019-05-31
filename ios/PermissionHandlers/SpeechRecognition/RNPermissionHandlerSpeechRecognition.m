@@ -4,11 +4,11 @@
 
 @implementation RNPermissionHandlerSpeechRecognition
 
-+ (NSString * _Nonnull)uniqueRequestingId {
++ (NSString * _Nonnull)handlerId {
   return @"speech-recognition";
 }
 
-+ (NSArray<NSString *> *)usageDescriptionKeys {
++ (NSArray<NSString *> * _Nonnull)usageDescriptionKeys {
   return @[@"NSSpeechRecognitionUsageDescription"];
 }
 

@@ -4,11 +4,11 @@
 
 @implementation RNPermissionHandlerSiri
 
-+ (NSString * _Nonnull)uniqueRequestingId {
++ (NSString * _Nonnull)handlerId {
   return @"siri";
 }
 
-+ (NSArray<NSString *> *)usageDescriptionKeys {
++ (NSArray<NSString *> * _Nonnull)usageDescriptionKeys {
   return @[@"NSSiriUsageDescription"];
 }
 

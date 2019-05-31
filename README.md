@@ -107,12 +107,12 @@ _📌 Don't forget to add permissions to `AndroidManifest.xml` for android and
 
 Promises resolve into one of these statuses:
 
-| Return value              | Notes                                                             |
-| ------------------------- | ----------------------------------------------------------------- |
-| `RESULTS.UNAVAILABLE`     | This feature is not available (on this device / in this context)  |
-| `RESULTS.GRANTED`         | The permission is granted                                         |
-| `RESULTS.DENIED`          | The permission has not been requested / is denied but requestable |
-| `RESULTS.NEVER_ASK_AGAIN` | The permission is denied and not requestable anymore              |
+| Return value          | Notes                                                             |
+| --------------------- | ----------------------------------------------------------------- |
+| `RESULTS.UNAVAILABLE` | This feature is not available (on this device / in this context)  |
+| `RESULTS.DENIED`      | The permission has not been requested / is denied but requestable |
+| `RESULTS.GRANTED`     | The permission is granted                                         |
+| `RESULTS.BLOCKED`     | The permission is denied and not requestable anymore              |
 
 ### Supported permissions
 
@@ -176,11 +176,7 @@ PERMISSIONS.IOS.STOREKIT;
 _types used in usage examples_
 
 ```ts
-type PermissionStatus =
-  | 'granted'
-  | 'denied'
-  | 'never_ask_again'
-  | 'unavailable';
+type PermissionStatus = 'unavailable' | 'denied' | 'blocked' | 'granted';
 ```
 
 #### check()
@@ -210,7 +206,7 @@ check(PERMISSIONS.IOS.LOCATION_ALWAYS)
       case RESULTS.DENIED:
         console.log('permission is denied and / or requestable');
         break;
-      case RESULTS.NEVER_ASK_AGAIN:
+      case RESULTS.BLOCKED:
         console.log('permission is denied and not requestable');
         break;
     }

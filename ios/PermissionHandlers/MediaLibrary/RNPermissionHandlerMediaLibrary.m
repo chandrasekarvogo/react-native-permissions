@@ -4,11 +4,11 @@
 
 @implementation RNPermissionHandlerMediaLibrary
 
-+ (NSString * _Nonnull)uniqueRequestingId {
++ (NSString * _Nonnull)handlerId {
   return @"media-library";
 }
 
-+ (NSArray<NSString *> *)usageDescriptionKeys {
++ (NSArray<NSString *> * _Nonnull)usageDescriptionKeys {
   return @[@"NSAppleMusicUsageDescription"];
 }
 

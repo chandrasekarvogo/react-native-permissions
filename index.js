@@ -36,31 +36,31 @@ const ANDROID = Object.freeze({
 });
 
 const IOS = Object.freeze({
-  BLUETOOTH_PERIPHERAL: 'ios.permission.BLUETOOTH_PERIPHERAL',
-  CALENDARS: 'ios.permission.CALENDARS',
-  CAMERA: 'ios.permission.CAMERA',
-  CONTACTS: 'ios.permission.CONTACTS',
-  FACE_ID: 'ios.permission.FACE_ID',
-  LOCATION_ALWAYS: 'ios.permission.LOCATION_ALWAYS',
-  LOCATION_WHEN_IN_USE: 'ios.permission.LOCATION_WHEN_IN_USE',
-  MEDIA_LIBRARY: 'ios.permission.MEDIA_LIBRARY',
-  MICROPHONE: 'ios.permission.MICROPHONE',
-  MOTION: 'ios.permission.MOTION',
-  NOTIFICATIONS: 'ios.permission.NOTIFICATIONS',
-  PHOTO_LIBRARY: 'ios.permission.PHOTO_LIBRARY',
-  REMINDERS: 'ios.permission.REMINDERS',
-  SIRI: 'ios.permission.SIRI',
-  SPEECH_RECOGNITION: 'ios.permission.SPEECH_RECOGNITION',
-  STOREKIT: 'ios.permission.STOREKIT',
+  BLUETOOTH_PERIPHERAL: 'bluetooth-peripheral',
+  CALENDARS: 'calendars',
+  CAMERA: 'camera',
+  CONTACTS: 'contacts',
+  FACE_ID: 'face-id',
+  LOCATION_ALWAYS: 'location-always',
+  LOCATION_WHEN_IN_USE: 'location-when-in-use',
+  MEDIA_LIBRARY: 'media-library',
+  MICROPHONE: 'microphone',
+  MOTION: 'motion',
+  NOTIFICATIONS: 'notifications',
+  PHOTO_LIBRARY: 'photo-library',
+  REMINDERS: 'reminders',
+  SIRI: 'siri',
+  SPEECH_RECOGNITION: 'speech-recognition',
+  STOREKIT: 'storekit',
 });
 
-export const PERMISSIONS = { ANDROID, IOS };
+export const PERMISSIONS = Object.freeze({ ANDROID, IOS });
 
 export const RESULTS = Object.freeze({
+  UNAVAILABLE: 'unavailable', // feature not available on OS / device or restricted by parental control
+  DENIED: 'denied', // denied but requestable
   GRANTED: 'granted',
-  DENIED: 'denied',
-  NEVER_ASK_AGAIN: 'never_ask_again',
-  UNAVAILABLE: 'unavailable',
+  BLOCKED: 'blocked', // // iOS & android: denied and not requestable (should open settings)
 });
 
 export type PermissionStatus = $Values<typeof RESULTS>;
@@ -132,7 +132,7 @@ async function internalCheck(permission: string): Promise<PermissionStatus> {
     permission,
   ))
     ? RESULTS.DENIED
-    : RESULTS.NEVER_ASK_AGAIN;
+    : RESULTS.BLOCKED;
 }
 
 async function internalRequest(
@@ -212,9 +212,7 @@ export function openSettings(): Promise<void> {
 
 export function check(permission: string): Promise<PermissionStatus> {
   // $FlowFixMe
-  if (__DEV__) {
-    assertPermission(permission);
-  }
+  __DEV__ && assertPermission(permission);
   return internalCheck(permission);
 }
 
@@ -222,9 +220,7 @@ export function checkMultiple(
   permissions: string[],
 ): Promise<{ [permission: string]: PermissionStatus }> {
   // $FlowFixMe
-  if (__DEV__) {
-    permissions.forEach(assertPermission);
-  }
+  __DEV__ && permissions.forEach(assertPermission);
   return internalCheckMultiple(permissions);
 }
 
@@ -233,9 +229,7 @@ export function request(
   config: RequestConfig = {},
 ): Promise<PermissionStatus> {
   // $FlowFixMe
-  if (__DEV__) {
-    assertPermission(permission);
-  }
+  __DEV__ && assertPermission(permission);
   return internalRequest(permission, config);
 }
 
@@ -243,8 +237,6 @@ export function requestMultiple(
   permissions: string[],
 ): Promise<{ [permission: string]: PermissionStatus }> {
   // $FlowFixMe
-  if (__DEV__) {
-    permissions.forEach(assertPermission);
-  }
+  __DEV__ && permissions.forEach(assertPermission);
   return internalRequestMultiple(permissions);
 }

@@ -4,11 +4,11 @@
 
 @implementation RNPermissionHandlerCalendars
 
-+ (NSString * _Nonnull)uniqueRequestingId {
++ (NSString * _Nonnull)handlerId {
   return @"calendars";
 }
 
-+ (NSArray<NSString *> *)usageDescriptionKeys {
++ (NSArray<NSString *> * _Nonnull)usageDescriptionKeys {
   return @[@"NSCalendarsUsageDescription"];
 }
 
