@@ -14,6 +14,9 @@
 
 - (void)checkWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
                  rejecter:(void (__unused ^ _Nonnull)(NSError * _Nonnull))reject {
+#if TARGET_OS_SIMULATOR
+  return resolve(RNPermissionStatusNotAvailable);
+#else
   if (@available(iOS 9.3, *)) {
     switch ([MPMediaLibrary authorizationStatus]) {
       case MPMediaLibraryAuthorizationStatusNotDetermined:
@@ -28,6 +31,7 @@
   } else {
     resolve(RNPermissionStatusAuthorized);
   }
+#endif
 }
 
 - (void)requestWithResolver:(void (^ _Nonnull)(RNPermissionStatus))resolve
