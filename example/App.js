@@ -1,16 +1,17 @@
 // @flow
 
-import * as React from 'react';
-import { Appbar, List, TouchableRipple, Snackbar } from 'react-native-paper';
+import React from 'react';
+import { Appbar, List, TouchableRipple } from 'react-native-paper';
 import * as RNPermissions from 'react-native-permissions';
 import type { PermissionStatus } from 'react-native-permissions';
 import theme from './theme';
 
 import {
-  AppState,
+  RefreshControl,
+  SafeAreaView,
   Platform,
   StatusBar,
-  ScrollView,
+  FlatList,
   StyleSheet,
   View,
 } from 'react-native';
@@ -40,56 +41,28 @@ const statusIcons: { [PermissionStatus]: string } = {
   blocked: 'cancel',
 };
 
-type AppStateType = 'active' | 'background' | 'inactive';
-
 type State = {|
-  snackBarVisible: boolean,
-  watchAppState: boolean,
+  refreshing: boolean,
   statuses: { [permisson: string]: PermissionStatus },
 |};
 
 export default class App extends React.Component<{}, State> {
-  constructor(props: Props) {
-    super(props);
+  state = {
+    refreshing: false,
+    statuses: {},
+  };
 
-    this.state = {
-      snackBarVisible: false,
-      watchAppState: false,
-      statuses: {},
-    };
-
-    setTimeout(() => {
-      this.checkAllPermissions();
-    }, 2000);
-  }
+  checkPermissions = (refreshing: boolean) => {
+    this.setState({ refreshing, statuses: {} }, () => {
+      RNPermissions.checkMultiple(permissionsValues)
+        .then(statuses => this.setState({ refreshing: false, statuses }))
+        .catch(error => console.error(error));
+    });
+  };
 
   componentDidMount() {
-    AppState.addEventListener('change', this.onAppStateChange);
+    this.checkPermissions(false);
   }
-
-  componentWillUnmount() {
-    AppState.removeEventListener('change', this.onAppStateChange);
-  }
-
-  checkAllPermissions = () => {
-    RNPermissions.checkMultiple(permissionsValues)
-      .then(statuses => this.setState({ statuses }))
-      .catch(error => console.error(error));
-  };
-
-  onAppStateChange = (nextAppState: AppStateType) => {
-    if (this.state.watchAppState && nextAppState === 'active') {
-      this.setState({
-        snackBarVisible: true,
-        watchAppState: false,
-      });
-
-      setTimeout(() => {
-        // @TODO don't fire setState on unmounted component
-        this.setState({ snackBarVisible: false });
-      }, 3000);
-    }
-  };
 
   render() {
     return (
@@ -106,66 +79,64 @@ export default class App extends React.Component<{}, State> {
           />
 
           <Appbar.Action
+            onPress={() => this.checkPermissions(false)}
+            icon="refresh"
+          />
+
+          <Appbar.Action
+            onPress={RNPermissions.openSettings}
             icon="settings-applications"
-            onPress={() => {
-              this.setState({ watchAppState: true }, () => {
-                RNPermissions.openSettings();
-              });
-            }}
           />
         </Appbar.Header>
 
-        <ScrollView>
-          <List.Section>
-            {permissionsValues.map(permissionValue => {
-              const permissionKey =
-                permissionsKeys[permissionsValues.indexOf(permissionValue)];
-              const status = this.state.statuses[permissionValue];
+        <FlatList
+          ListFooterComponent={<SafeAreaView style={{ flex: 0 }} />}
+          data={permissionsValues}
+          keyExtractor={item =>
+            permissionsKeys[permissionsValues.indexOf(item)]
+          }
+          refreshControl={
+            <RefreshControl
+              onRefresh={() => this.checkPermissions(true)}
+              refreshing={this.state.refreshing}
+            />
+          }
+          renderItem={({ item }) => {
+            const status = this.state.statuses[item];
+            const key = permissionsKeys[permissionsValues.indexOf(item)];
 
-              return (
-                <TouchableRipple
-                  key={permissionKey}
-                  disabled={
-                    status === RNPermissions.RESULTS.UNAVAILABLE ||
-                    status === RNPermissions.RESULTS.BLOCKED
-                  }
-                  onPress={() => {
-                    RNPermissions.request(
-                      // $FlowFixMe
-                      platformPermissions[permissionKey],
-                    ).then(result => {
-                      this.setState(prevState => ({
-                        ...prevState,
-                        statuses: {
-                          ...prevState.statuses,
-                          [permissionValue]: result,
-                        },
-                      }));
-                    });
-                  }}
-                >
-                  <List.Item
-                    title={permissionKey}
-                    description={status}
-                    right={() => (
-                      <List.Icon
-                        color={statusColors[status]}
-                        icon={statusIcons[status]}
-                      />
-                    )}
-                  />
-                </TouchableRipple>
-              );
-            })}
-          </List.Section>
-        </ScrollView>
-
-        <Snackbar
-          onDismiss={() => this.setState({ snackBarVisible: false })}
-          visible={this.state.snackBarVisible}
-        >
-          Welcome back ! Refreshing permissions…
-        </Snackbar>
+            return (
+              <TouchableRipple
+                disabled={
+                  status === RNPermissions.RESULTS.UNAVAILABLE ||
+                  status === RNPermissions.RESULTS.BLOCKED
+                }
+                onPress={() => {
+                  RNPermissions.request(
+                    // $FlowFixMe
+                    platformPermissions[key],
+                  ).then(result => {
+                    this.setState(prevState => ({
+                      ...prevState,
+                      statuses: { ...prevState.statuses, [item]: result },
+                    }));
+                  });
+                }}
+              >
+                <List.Item
+                  title={key}
+                  description={status}
+                  right={() => (
+                    <List.Icon
+                      color={statusColors[status]}
+                      icon={statusIcons[status]}
+                    />
+                  )}
+                />
+              </TouchableRipple>
+            );
+          }}
+        />
       </View>
     );
   }
