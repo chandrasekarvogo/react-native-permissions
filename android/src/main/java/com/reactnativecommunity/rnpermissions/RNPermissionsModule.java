@@ -11,13 +11,15 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.module.annotations.ReactModule;
 
+@ReactModule(name = RNPermissionsModule.MODULE_NAME)
 public class RNPermissionsModule extends ReactContextBaseJavaModule {
 
   private static final String ERROR_INVALID_ACTIVITY = "E_INVALID_ACTIVITY";
   private static final String SETTING_NAME = "@RNPermissions:requested";
-
   private final SharedPreferences sharedPrefs;
+  static final String MODULE_NAME = "RNPermissions";
 
   public RNPermissionsModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -26,7 +28,7 @@ public class RNPermissionsModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "RNPermissions";
+    return this.MODULE_NAME;
   }
 
   @ReactMethod
