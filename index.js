@@ -153,29 +153,6 @@ async function internalRequest(
   return RNPermissions.setPermissionAsRequested(permission).then(() => status);
 }
 
-async function internalCheckMultiple(
-  permissions: string[],
-): Promise<{ [permission: string]: PermissionStatus }> {
-  let result = {};
-  let availables = permissions;
-
-  if (Platform.OS === 'android') {
-    const unavailables = await extractUnavailables(permissions);
-    const unavailablesKeys = Object.keys(result);
-    result = unavailables;
-    availables = permissions.filter(p => !unavailablesKeys.includes(p));
-  }
-
-  return Promise.all(availables.map(p => internalCheck(p)))
-    .then(statuses =>
-      statuses.reduce((acc, status, i) => {
-        acc[availables[i]] = status;
-        return acc;
-      }, {}),
-    )
-    .then(statuses => ({ ...result, ...statuses }));
-}
-
 async function internalRequestMultiple(
   permissions: string[],
 ): Promise<{ [permission: string]: PermissionStatus }> {
@@ -216,14 +193,6 @@ export function check(permission: string): Promise<PermissionStatus> {
   // $FlowFixMe
   __DEV__ && assertPermission(permission);
   return internalCheck(permission);
-}
-
-export function checkMultiple(
-  permissions: string[],
-): Promise<{ [permission: string]: PermissionStatus }> {
-  // $FlowFixMe
-  __DEV__ && permissions.forEach(assertPermission);
-  return internalCheckMultiple(permissions);
 }
 
 export function request(
