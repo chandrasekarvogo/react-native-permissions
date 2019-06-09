@@ -7,8 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DD49FE14227E0C1C00029460 /* RCTConvert+RNPermission.m in Sources */ = {isa = PBXBuildFile; fileRef = DD49FE12227E0C1C00029460 /* RCTConvert+RNPermission.m */; };
-		DD49FE15227E0C1C00029460 /* RNPermissionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DD49FE13227E0C1C00029460 /* RNPermissionsManager.m */; };
+		DD51BB6022AAB92E0042F44C /* RNPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = DD51BB5E22AAB92E0042F44C /* RNPermissions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,10 +24,8 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNPermissions.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNPermissions.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		DD49FE10227E0C1C00029460 /* RNPermissionsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNPermissionsManager.h; sourceTree = "<group>"; };
-		DD49FE11227E0C1C00029460 /* RCTConvert+RNPermission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+RNPermission.h"; sourceTree = "<group>"; };
-		DD49FE12227E0C1C00029460 /* RCTConvert+RNPermission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RNPermission.m"; sourceTree = "<group>"; };
-		DD49FE13227E0C1C00029460 /* RNPermissionsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNPermissionsManager.m; sourceTree = "<group>"; };
+		DD51BB5E22AAB92E0042F44C /* RNPermissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNPermissions.m; sourceTree = "<group>"; };
+		DD51BB5F22AAB92E0042F44C /* RNPermissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNPermissions.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,10 +50,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				DD49FE11227E0C1C00029460 /* RCTConvert+RNPermission.h */,
-				DD49FE12227E0C1C00029460 /* RCTConvert+RNPermission.m */,
-				DD49FE10227E0C1C00029460 /* RNPermissionsManager.h */,
-				DD49FE13227E0C1C00029460 /* RNPermissionsManager.m */,
+				DD51BB5F22AAB92E0042F44C /* RNPermissions.h */,
+				DD51BB5E22AAB92E0042F44C /* RNPermissions.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			indentWidth = 2;
@@ -121,8 +116,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD49FE15227E0C1C00029460 /* RNPermissionsManager.m in Sources */,
-				DD49FE14227E0C1C00029460 /* RCTConvert+RNPermission.m in Sources */,
+				DD51BB6022AAB92E0042F44C /* RNPermissions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

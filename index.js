@@ -210,6 +210,8 @@ export function openSettings(): Promise<void> {
   return RNPermissions.openSettings().then(() => {});
 }
 
+export const getRequested = RNPermissions.getRequested;
+
 export function check(permission: string): Promise<PermissionStatus> {
   // $FlowFixMe
   __DEV__ && assertPermission(permission);

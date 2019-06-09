@@ -7,66 +7,89 @@ import type { PermissionStatus } from 'react-native-permissions';
 import theme from './theme';
 
 import {
-  RefreshControl,
-  SafeAreaView,
-  Platform,
-  StatusBar,
   FlatList,
-  StyleSheet,
+  Platform,
+  RefreshControl,
+  StatusBar,
+  SafeAreaView,
   View,
 } from 'react-native';
 
 const { PERMISSIONS } = RNPermissions;
-// we remove siri from the example since it needs a certificate
-const { SIRI, ...IOS_PERMISSIONS } = PERMISSIONS.IOS;
+const { SIRI, ...PERMISSIONS_IOS } = PERMISSIONS.IOS; // remove siri (certificate required)
 
-const platformPermissions =
-  Platform.OS === 'android' ? PERMISSIONS.ANDROID : IOS_PERMISSIONS;
+const platformPermissions = Platform.select({
+  ios: PERMISSIONS_IOS,
+  android: PERMISSIONS.ANDROID,
+  default: {},
+});
 
 const permissionsKeys = Object.keys(platformPermissions);
 // $FlowFixMe
 const permissionsValues: string[] = Object.values(platformPermissions);
 
-const statusColors: { [PermissionStatus]: string } = {
+const colors: { [PermissionStatus]: string } = {
   unavailable: '#cfd8dc',
   denied: '#ff9800',
   granted: '#43a047',
   blocked: '#e53935',
 };
 
-const statusIcons: { [PermissionStatus]: string } = {
+const icons: { [PermissionStatus]: string } = {
   unavailable: 'lens',
   denied: 'error',
   granted: 'check-circle',
   blocked: 'cancel',
 };
 
+let PermissionRow = ({
+  name,
+  disabled,
+  status,
+  onPress,
+}: {
+  name: string,
+  status: PermissionStatus,
+  disabled: boolean,
+  onPress: (name: string) => void,
+}) => (
+  <TouchableRipple disabled={disabled} onPress={onPress}>
+    <List.Item
+      right={() => <List.Icon color={colors[status]} icon={icons[status]} />}
+      title={name}
+      description={status}
+    />
+  </TouchableRipple>
+);
+
 type State = {|
-  refreshing: boolean,
   statuses: { [permisson: string]: PermissionStatus },
+  refreshing: boolean,
 |};
 
 export default class App extends React.Component<{}, State> {
   state = {
-    refreshing: false,
     statuses: {},
+    refreshing: false,
   };
 
-  checkPermissions = (refreshing: boolean) => {
-    this.setState({ refreshing, statuses: {} }, () => {
-      RNPermissions.checkMultiple(permissionsValues)
-        .then(statuses => this.setState({ refreshing: false, statuses }))
-        .catch(error => console.error(error));
+  check = () =>
+    RNPermissions.checkMultiple(permissionsValues)
+      .then(statuses => this.setState({ statuses }))
+      .catch(error => console.error(error));
+
+  refresh = () =>
+    this.setState({ refreshing: true, statuses: {} }, () => {
+      this.check().finally(() => this.setState({ refreshing: false }));
     });
-  };
 
   componentDidMount() {
-    this.checkPermissions(false);
+    this.check();
   }
 
   render() {
     return (
-      <View style={styles.container}>
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <StatusBar
           backgroundColor={theme.colors.primary}
           barStyle="light-content"
@@ -78,10 +101,7 @@ export default class App extends React.Component<{}, State> {
             subtitle="Example application"
           />
 
-          <Appbar.Action
-            onPress={() => this.checkPermissions(false)}
-            icon="refresh"
-          />
+          <Appbar.Action onPress={this.check} icon="refresh" />
 
           <Appbar.Action
             onPress={RNPermissions.openSettings}
@@ -97,43 +117,33 @@ export default class App extends React.Component<{}, State> {
           }
           refreshControl={
             <RefreshControl
-              onRefresh={() => this.checkPermissions(true)}
+              onRefresh={this.refresh}
               refreshing={this.state.refreshing}
             />
           }
           renderItem={({ item }) => {
-            const status = this.state.statuses[item];
             const key = permissionsKeys[permissionsValues.indexOf(item)];
+            const status = this.state.statuses[item];
 
             return (
-              <TouchableRipple
+              <PermissionRow
+                status={status}
+                name={key}
                 disabled={
                   status === RNPermissions.RESULTS.UNAVAILABLE ||
                   status === RNPermissions.RESULTS.BLOCKED
                 }
                 onPress={() => {
-                  RNPermissions.request(
-                    // $FlowFixMe
-                    platformPermissions[key],
-                  ).then(result => {
-                    this.setState(prevState => ({
-                      ...prevState,
-                      statuses: { ...prevState.statuses, [item]: result },
-                    }));
-                  });
+                  RNPermissions.request(platformPermissions[key]).then(
+                    result => {
+                      this.setState(prevState => ({
+                        ...prevState,
+                        statuses: { ...prevState.statuses, [item]: result },
+                      }));
+                    },
+                  );
                 }}
-              >
-                <List.Item
-                  title={key}
-                  description={status}
-                  right={() => (
-                    <List.Icon
-                      color={statusColors[status]}
-                      icon={statusIcons[status]}
-                    />
-                  )}
-                />
-              </TouchableRipple>
+              />
             );
           }}
         />
@@ -141,10 +151,3 @@ export default class App extends React.Component<{}, State> {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-});
