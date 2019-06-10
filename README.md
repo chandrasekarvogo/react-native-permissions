@@ -218,34 +218,6 @@ check(PERMISSIONS.IOS.LOCATION_ALWAYS)
 
 ---
 
-#### checkMultiple()
-
-Check multiples permissions.
-
-#### Method type
-
-```ts
-function checkMultiple(
-  permissions: string[],
-): Promise<{ [permission: string]: PermissionStatus }>;
-```
-
-#### Usage example
-
-```js
-import { checkMultiple, PERMISSIONS } from 'react-native-permissions';
-
-checkMultiple([
-  PERMISSIONS.IOS.LOCATION_ALWAYS,
-  PERMISSIONS.IOS.MEDIA_LIBRARY,
-]).then(results => {
-  // results[PERMISSIONS.IOS.LOCATION_ALWAYS]
-  // results[PERMISSIONS.IOS.MEDIA_LIBRARY]
-});
-```
-
----
-
 #### request()
 
 Request one permission.
